@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">BakingApp</string>
+    <string name="error_ocurred_on_loading_info">Ooops something happened.\n Press here to try again.</string>
+</resources>

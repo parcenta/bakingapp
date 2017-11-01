@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    >
+    <FrameLayout
+        android:orientation="vertical" android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/recipe_list_recycler_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+
+        <ProgressBar
+            android:id="@+id/recipe_list_progress_bar"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:layout_gravity="center"/>
+
+        <TextView
+            android:id="@+id/recipe_list_error_ocurred_textview"
+            style="@style/BakingApp.RecyclerView.ErrorMessage"
+            android:text="@string/error_ocurred_on_loading_info"
+            />
+
+
+    </FrameLayout>
+</layout>
