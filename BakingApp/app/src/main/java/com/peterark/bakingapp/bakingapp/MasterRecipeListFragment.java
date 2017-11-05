@@ -1,6 +1,7 @@
 package com.peterark.bakingapp.bakingapp;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -8,17 +9,16 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.AsyncTaskLoader;
 import android.support.v4.content.Loader;
+import android.support.v7.widget.LinearLayoutManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.peterark.bakingapp.bakingapp.database.contracts.RecipeContract;
 import com.peterark.bakingapp.bakingapp.databinding.FragmentMasterRecipeListBinding;
 import com.peterark.bakingapp.bakingapp.utils.BakingDataUtils;
-import com.peterark.bakingapp.bakingapp.utils.NetworkUtils;
-
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,7 +28,8 @@ import timber.log.Timber;
  * Created by PETER on 29/10/2017.
  */
 
-public class MasterRecipeListFragment extends Fragment implements LoaderManager.LoaderCallbacks<MasterRecipeListFragment.MasterRecipeListResponse> {
+public class MasterRecipeListFragment extends Fragment implements LoaderManager.LoaderCallbacks<MasterRecipeListFragment.MasterRecipeListResponse>,
+                                                                        MasterRecipeListAdapter.OnRecipeClickHandler {
 
 
     FragmentMasterRecipeListBinding mBinding;
@@ -40,12 +41,25 @@ public class MasterRecipeListFragment extends Fragment implements LoaderManager.
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         mBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_master_recipe_list, container, false);
+
+        mAdapter = new MasterRecipeListAdapter(null,this);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
+        mBinding.recipeListRecyclerView.setLayoutManager(layoutManager);
+        mBinding.recipeListRecyclerView.setAdapter(mAdapter);
+
         return mBinding.getRoot();
     }
 
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        // Init Loader
+        getLoaderManager().initLoader(0,null,this);
+    }
+
     /* -----------------------------------------------------------------------------------------------------
-     * LOADER CALLBACKS METHODS
-     -------------------------------------------------------------------------------------------------------*/
+             * LOADER CALLBACKS METHODS
+             -------------------------------------------------------------------------------------------------------*/
     @Override
     public Loader<MasterRecipeListResponse> onCreateLoader(int id, Bundle args) {
         return new AsyncTaskLoader<MasterRecipeListResponse>(getActivity()) {
@@ -98,7 +112,12 @@ public class MasterRecipeListFragment extends Fragment implements LoaderManager.
                         errorMessage = syncErrorMessage;
 
                     // Now we load the saved baking recipes (if there is any).If syncing in the previous step failed, we load anyway if there are previously saved recipes in DB.
-
+                    Cursor recipesCursor = context.getContentResolver().query(RecipeContract.RecipeEntry.CONTENT_URI,null,null,null,null);
+                    while(recipesCursor.moveToNext()){
+                        int recipeId        = recipesCursor.getInt(recipesCursor.getColumnIndex(RecipeContract.RecipeEntry.COLUMN_RECIPE_ID));
+                        String recipeName   = recipesCursor.getString(recipesCursor.getColumnIndex(RecipeContract.RecipeEntry.COLUMN_RECIPE_NAME));
+                        recipeList.add(new RecipeItem(recipeId,recipeName));
+                    }
 
                     return new MasterRecipeListResponse(errorMessage,recipeList);
 
@@ -149,6 +168,11 @@ public class MasterRecipeListFragment extends Fragment implements LoaderManager.
 
     @Override
     public void onLoaderReset(Loader<MasterRecipeListResponse> loader) {
+    }
+
+    @Override
+    public void onRecipeClick(RecipeItem recipeId) {
+
     }
 
     public class MasterRecipeListResponse {

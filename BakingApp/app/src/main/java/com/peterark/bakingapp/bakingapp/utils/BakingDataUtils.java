@@ -1,9 +1,13 @@
 package com.peterark.bakingapp.bakingapp.utils;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.util.Log;
 
 import com.peterark.bakingapp.bakingapp.BuildConfig;
+import com.peterark.bakingapp.bakingapp.database.contracts.RecipeContract;
+import com.peterark.bakingapp.bakingapp.database.contracts.RecipeIngredientContract;
+import com.peterark.bakingapp.bakingapp.database.contracts.RecipeStepContract;
 import com.peterark.bakingapp.bakingapp.helperStructures.Recipe;
 import com.peterark.bakingapp.bakingapp.helperStructures.RecipeIngredient;
 import com.peterark.bakingapp.bakingapp.helperStructures.RecipeStep;
@@ -34,15 +38,51 @@ public class BakingDataUtils {
             String response = NetworkUtils
                     .getResponseFromHttpUrl(context, requestUrl);
 
-            if(response==null) {
+            if(response==null)
                 return "No connection available.";
-            }
 
             Timber.d("JsonString Response: " + response);
 
+            // Convert the JSON to a Recipe class object.
             List<Recipe> recipeList = BakingDataUtils.getBakingRecipeDataFromJson(response);
 
+            // First delete previous data saved in DB tables.
+            context.getContentResolver().delete(RecipeIngredientContract.RecipeIngredientEntry.CONTENT_URI,null,null);
+            context.getContentResolver().delete(RecipeStepContract.RecipeStepEntry.CONTENT_URI,null,null);
+            context.getContentResolver().delete(RecipeContract.RecipeEntry.CONTENT_URI,null,null);
 
+            // Now insert the data from the Recipe class object.
+            for (Recipe oneRecipe : recipeList){
+
+                // Insert Recipe Header
+                ContentValues cv = new ContentValues();
+                cv.put(RecipeContract.RecipeEntry.COLUMN_RECIPE_ID,oneRecipe.recipeId);
+                cv.put(RecipeContract.RecipeEntry.COLUMN_RECIPE_NAME,oneRecipe.recipeName);
+                cv.put(RecipeContract.RecipeEntry.COLUMN_RECIPE_SERVINGS,oneRecipe.recipeServings);
+                context.getContentResolver().insert(RecipeContract.RecipeEntry.CONTENT_URI,cv);
+
+                // Insert the Ingredients
+                for(RecipeIngredient oneIngredient : oneRecipe.recipeIngredients){
+                    cv = new ContentValues();
+                    cv.put(RecipeIngredientContract.RecipeIngredientEntry.COLUMN_RECIPE_ID,oneRecipe.recipeId);
+                    cv.put(RecipeIngredientContract.RecipeIngredientEntry.COLUMN_RECIPE_INGREDIENT_NAME,oneIngredient.ingredientName);
+                    cv.put(RecipeIngredientContract.RecipeIngredientEntry.COLUMN_RECIPE_INGREDIENT_MEASURE,oneIngredient.ingredientMeasure);
+                    cv.put(RecipeIngredientContract.RecipeIngredientEntry.COLUMN_RECIPE_INGREDIENT_QUANTITY,oneIngredient.ingredientQuantity);
+                    context.getContentResolver().insert(RecipeIngredientContract.RecipeIngredientEntry.CONTENT_URI,cv);
+                }
+
+                // Insert the Steps
+                for(RecipeStep oneStep : oneRecipe.recipeSteps){
+                    cv = new ContentValues();
+                    cv.put(RecipeStepContract.RecipeStepEntry.COLUMN_RECIPE_ID,oneRecipe.recipeId);
+                    cv.put(RecipeStepContract.RecipeStepEntry.COLUMN_RECIPE_STEP_ID,oneStep.stepId);
+                    cv.put(RecipeStepContract.RecipeStepEntry.COLUMN_RECIPE_STEP_SHORT_DESCRIPTION,oneStep.stepShortDescription);
+                    cv.put(RecipeStepContract.RecipeStepEntry.COLUMN_RECIPE_STEP_DESCRIPTION,oneStep.stepDescription);
+                    cv.put(RecipeStepContract.RecipeStepEntry.COLUMN_RECIPE_STEP_THUMBNAIL_URL,oneStep.stepThumbnailUrl);
+                    cv.put(RecipeStepContract.RecipeStepEntry.COLUMN_RECIPE_STEP_VIDEO_URL,oneStep.stepVideoUrl);
+                    context.getContentResolver().insert(RecipeStepContract.RecipeStepEntry.CONTENT_URI,cv);
+                }
+            }
 
             return "";
 
@@ -57,6 +97,8 @@ public class BakingDataUtils {
     }
 
     public static List<Recipe> getBakingRecipeDataFromJson(String dataJson) throws Exception{
+
+        Timber.d("Received JSON: %s",dataJson);
 
         // Init recipe list.
         List<Recipe> recipeList = new ArrayList<>();
@@ -92,13 +134,13 @@ public class BakingDataUtils {
             List<RecipeStep> stepsList = new ArrayList<>();
             JSONArray stepsArray = oneRecipeJsonObject.getJSONArray("steps");
             for (int j = 0; j < stepsArray.length(); j++) {
-                JSONObject oneIngredient = ingredientsArray.getJSONObject(j);
+                JSONObject oneStep = stepsArray.getJSONObject(j);
 
-                int stepId              = oneIngredient.getInt("id");
-                String shortDescription = oneIngredient.getString("shortDescription");
-                String description      = oneIngredient.getString("description");
-                String videoUrl         = oneIngredient.getString("videoURL");
-                String thumbnailUrl     = oneIngredient.getString("thumbnailURL");
+                int stepId              = oneStep.getInt("id");
+                String shortDescription = oneStep.getString("shortDescription");
+                String description      = oneStep.getString("description");
+                String videoUrl         = oneStep.getString("videoURL");
+                String thumbnailUrl     = oneStep.getString("thumbnailURL");
 
                 stepsList.add(new RecipeStep(stepId,shortDescription,description,videoUrl,thumbnailUrl));
             }

@@ -6,6 +6,7 @@ import com.peterark.bakingapp.bakingapp.database.contracts.RecipeContract;
 import com.peterark.bakingapp.bakingapp.database.contracts.RecipeIngredientContract;
 import com.peterark.bakingapp.bakingapp.database.contracts.RecipeStepContract;
 import com.peterark.bakingapp.bakingapp.helperStructures.RecipeIngredient;
+import com.peterark.bakingapp.bakingapp.helperStructures.RecipeStep;
 
 /**
  * Created by PETER on 1/11/2017.
@@ -35,7 +36,7 @@ public class RecipeDbUtils {
                         RecipeIngredientContract.RecipeIngredientEntry.COLUMN_RECIPE_INGREDIENT_MEASURE     + " TEXT NOT NULL);";
                 break;
             case RecipeStepContract.RecipeStepEntry.TABLE_NAME:
-                CREATE_TABLE_SQL = "CREATE TABLE "  + RecipeIngredientContract.RecipeIngredientEntry.TABLE_NAME + " (" +
+                CREATE_TABLE_SQL = "CREATE TABLE "  + RecipeStepContract.RecipeStepEntry.TABLE_NAME + " (" +
                         RecipeStepContract.RecipeStepEntry._ID                                  + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                         RecipeStepContract.RecipeStepEntry.COLUMN_RECIPE_ID                     + " INTEGER NOT NULL, " +
                         RecipeStepContract.RecipeStepEntry.COLUMN_RECIPE_STEP_ID                + " INTEGER NOT NULL," +
