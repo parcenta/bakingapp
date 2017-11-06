@@ -1,14 +1,63 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
-    <LinearLayout
+
+    <android.support.v7.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="16sp">
-        <TextView
-            android:id="@+id/recipe_name_textview"
-            style="@style/BakingApp.ListItem.PrimaryText"
-            tools:text="Orange cake"/>
-    </LinearLayout>
+        android:layout_marginStart="16dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        android:elevation="2dp">
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:baselineAligned="false">
+
+            <LinearLayout
+                android:layout_width="80dp"
+                android:layout_height="match_parent"
+                android:background="@color/image_placeholder_background"
+                android:gravity="center">
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:src="@drawable/ic_cake_white"
+                    android:padding="16dp"
+                    android:contentDescription="@string/default_content_description"
+                    />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+                <TextView
+                    android:id="@+id/recipe_name_textview"
+                    style="@style/BakingApp.ListItem.PrimaryText"
+                    android:maxLines="1"
+                    android:ellipsize="end"
+                    tools:text="Orange cake"/>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <TextView
+                        style="@style/BakingApp.ListItem.SecondaryText"
+                        android:text="@string/servings_list_item_label"
+                        android:layout_marginRight="4dp"
+                        android:layout_marginEnd="4dp"/>
+                    <TextView
+                        android:id="@+id/recipe_servings_textview"
+                        style="@style/BakingApp.ListItem.SecondaryText"
+                        tools:text="8"/>
+                </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
+    </android.support.v7.widget.CardView>
 </layout>

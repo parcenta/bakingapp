@@ -9,6 +9,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.AsyncTaskLoader;
 import android.support.v4.content.Loader;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -35,17 +36,30 @@ public class MasterRecipeListFragment extends Fragment implements LoaderManager.
     FragmentMasterRecipeListBinding mBinding;
     MasterRecipeListAdapter mAdapter;
 
-    List<RecipeItem> mItemList;
+    MasterRecipeListResponse mTaskResponse;
+
+    boolean isTablet;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         mBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_master_recipe_list, container, false);
 
+        // Check if its a tablet or not. (sw600dp)
+        Context context = getActivity();
+        isTablet = container.getResources().getBoolean(R.bool.isTablet);
+
         mAdapter = new MasterRecipeListAdapter(null,this);
-        LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
+        GridLayoutManager layoutManager = new GridLayoutManager(getActivity(),isTablet ? 3 : 1);
         mBinding.recipeListRecyclerView.setLayoutManager(layoutManager);
         mBinding.recipeListRecyclerView.setAdapter(mAdapter);
+
+        mBinding.recipeListErrorOcurredTextview.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getLoaderManager().restartLoader(0,null,MasterRecipeListFragment.this);
+            }
+        });
 
         return mBinding.getRoot();
     }
@@ -88,7 +102,7 @@ public class MasterRecipeListFragment extends Fragment implements LoaderManager.
                     Timber.d("onStartLoading: Forcing Load...");
 
                     // Set the MoviesList to null.
-                    mItemList = null;
+                    mTaskResponse = null;
                     mAdapter.setItemList(null);
 
                     forceLoad();
@@ -116,7 +130,8 @@ public class MasterRecipeListFragment extends Fragment implements LoaderManager.
                     while(recipesCursor.moveToNext()){
                         int recipeId        = recipesCursor.getInt(recipesCursor.getColumnIndex(RecipeContract.RecipeEntry.COLUMN_RECIPE_ID));
                         String recipeName   = recipesCursor.getString(recipesCursor.getColumnIndex(RecipeContract.RecipeEntry.COLUMN_RECIPE_NAME));
-                        recipeList.add(new RecipeItem(recipeId,recipeName));
+                        int servings        = recipesCursor.getInt(recipesCursor.getColumnIndex(RecipeContract.RecipeEntry.COLUMN_RECIPE_SERVINGS));
+                        recipeList.add(new RecipeItem(recipeId,recipeName,servings));
                     }
 
                     return new MasterRecipeListResponse(errorMessage,recipeList);
@@ -137,27 +152,28 @@ public class MasterRecipeListFragment extends Fragment implements LoaderManager.
     @Override
     public void onLoadFinished(Loader<MasterRecipeListResponse> loader, MasterRecipeListResponse response) {
 
-        if (response == null) {
+        // Hide the Progress Bar.
+        mBinding.recipeListProgressBar.setVisibility(View.INVISIBLE);
+
+        mTaskResponse = response;
+
+        if (mTaskResponse == null) {
             Toast.makeText(getActivity(), "An error has ocurred. Please try again.", Toast.LENGTH_SHORT).show();
             mBinding.recipeListErrorOcurredTextview.setVisibility(View.VISIBLE);
             return;
         }
 
-        // Hide the Progress Bar.
-        mBinding.recipeListProgressBar.setVisibility(View.INVISIBLE);
-
         // Set the list in the adapter.
-        mItemList = response.recipeList;
-        mAdapter.setItemList(mItemList);
+        mAdapter.setItemList(mTaskResponse.recipeList);
 
         // Show any error messages as a Toast Message.
-        if (response.errorMessage.length()>0){
+        if (mTaskResponse.errorMessage.length()>0){
             Context context = getActivity();
-            if (context != null) Toast.makeText(context,response.errorMessage,Toast.LENGTH_SHORT).show();
+            if (context != null) Toast.makeText(context,mTaskResponse.errorMessage,Toast.LENGTH_SHORT).show();
         }
 
         // If there are no results found and also there is an error message. then show a message in the layout (To make the user to press it in order to retry the loading).
-        if (mItemList !=null && mItemList.size() == 0 && response.errorMessage.length()>0)
+        if (mTaskResponse.recipeList !=null && mTaskResponse.recipeList.size() == 0 && mTaskResponse.errorMessage.length()>0)
             mBinding.recipeListErrorOcurredTextview.setVisibility(View.VISIBLE);
         else //
             mBinding.recipeListRecyclerView.setVisibility(View.VISIBLE);

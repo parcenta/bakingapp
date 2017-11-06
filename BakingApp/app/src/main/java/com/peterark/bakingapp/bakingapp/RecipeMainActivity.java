@@ -11,8 +11,11 @@ public class RecipeMainActivity  extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recipe_main);
 
-        // Add the fragment to its container using a FragmentManager and a Transaction
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        fragmentManager.beginTransaction().replace(R.id.master_recipe_list_container,new MasterRecipeListFragment()).commit();
+
+        if (savedInstanceState == null) {
+            // Add the fragment to its container using a FragmentManager and a Transaction
+            FragmentManager fragmentManager = getSupportFragmentManager();
+            fragmentManager.beginTransaction().replace(R.id.master_recipe_list_container,new MasterRecipeListFragment()).commit();
+        }
     }
 }

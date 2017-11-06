@@ -10,18 +10,23 @@
         <android.support.v7.widget.RecyclerView
             android:id="@+id/recipe_list_recycler_view"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
+            android:layout_height="match_parent"
+            android:clipToPadding="false"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"/>
 
         <ProgressBar
             android:id="@+id/recipe_list_progress_bar"
             android:layout_width="56dp"
             android:layout_height="56dp"
-            android:layout_gravity="center"/>
+            android:layout_gravity="center"
+            android:visibility="gone"/>
 
         <TextView
             android:id="@+id/recipe_list_error_ocurred_textview"
             style="@style/BakingApp.RecyclerView.ErrorMessage"
             android:text="@string/error_ocurred_on_loading_info"
+            android:visibility="gone"
             />
 
     </FrameLayout>

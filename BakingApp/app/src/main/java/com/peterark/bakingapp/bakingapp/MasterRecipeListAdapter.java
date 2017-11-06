@@ -47,6 +47,7 @@ public class MasterRecipeListAdapter extends RecyclerView.Adapter<MasterRecipeLi
         RecipeItem item = mItemList.get(position);
 
         holder.mBinding.recipeNameTextview.setText(item.recipeName);
+        holder.mBinding.recipeServingsTextview.setText(String.valueOf(item.recipeServings));
     }
 
     @Override
