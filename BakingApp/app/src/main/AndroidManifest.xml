@@ -2,8 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.peterark.bakingapp.bakingapp">
 
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
-    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:allowBackup="true"
@@ -20,12 +20,14 @@
             </intent-filter>
         </activity>
 
+        <provider
+            android:name=".provider.RecipeProvider"
+            android:authorities="@string/content_authority"
+            android:exported="false" />
 
-        <provider android:authorities="@string/content_authority"
-                    android:name=".provider.RecipeProvider"
-                    android:exported="false"/>
-
-
+        <activity android:name=".panels.RecipeDetailActivity"
+            android:parentActivityName=".RecipeMainActivity"
+            android:label="@string/recipe_detail_activity_action_bar_title"/>
     </application>
 
 </manifest>

@@ -6,4 +6,8 @@
     <string name="error_ocurred_on_loading_info">Ooops something happened.\n Press here to try again.</string>
     <string name="servings_list_item_label">Servings:</string>
     <string name="default_content_description">Element</string>
+    <string name="ingredients_title">Ingredients</string>
+    <string name="steps_title">Steps</string>
+
+    <string name="recipe_detail_activity_action_bar_title">Recipe Detail</string>
 </resources>

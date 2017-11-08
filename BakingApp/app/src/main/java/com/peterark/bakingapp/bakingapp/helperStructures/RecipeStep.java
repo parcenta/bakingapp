@@ -18,4 +18,9 @@ public class RecipeStep {
         this.stepVideoUrl           = stepVideoUrl;
         this.stepThumbnailUrl       = stepThumbnailUrl;
     }
+
+    // For the RecipeDetail step list adapter.
+    public RecipeStep(String stepShortDescription){
+        this.stepShortDescription   = stepShortDescription;
+    }
 }

@@ -19,6 +19,7 @@ import android.widget.Toast;
 
 import com.peterark.bakingapp.bakingapp.database.contracts.RecipeContract;
 import com.peterark.bakingapp.bakingapp.databinding.FragmentMasterRecipeListBinding;
+import com.peterark.bakingapp.bakingapp.panels.RecipeDetailActivity;
 import com.peterark.bakingapp.bakingapp.utils.BakingDataUtils;
 import java.util.ArrayList;
 import java.util.List;
@@ -47,13 +48,13 @@ public class MasterRecipeListFragment extends Fragment implements LoaderManager.
 
         // Check if its a tablet or not. (sw600dp)
         Context context = getActivity();
-        isTablet = container.getResources().getBoolean(R.bool.isTablet);
+        isTablet = context.getResources().getBoolean(R.bool.isTablet);
 
+        // Set the Adapter
         mAdapter = new MasterRecipeListAdapter(null,this);
         GridLayoutManager layoutManager = new GridLayoutManager(getActivity(),isTablet ? 3 : 1);
         mBinding.recipeListRecyclerView.setLayoutManager(layoutManager);
         mBinding.recipeListRecyclerView.setAdapter(mAdapter);
-
         mBinding.recipeListErrorOcurredTextview.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -187,7 +188,15 @@ public class MasterRecipeListFragment extends Fragment implements LoaderManager.
     }
 
     @Override
-    public void onRecipeClick(RecipeItem recipeId) {
+    public void onRecipeClick(RecipeItem recipeItem) {
+        Context context = getActivity();
+
+        if (recipeItem == null || context == null) {
+            if (context != null) Toast.makeText(context, "An error has ocurred. Try again.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        RecipeDetailActivity.launch(context,recipeItem.recipeId);
 
     }
 
