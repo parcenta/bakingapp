@@ -20,7 +20,8 @@ public class RecipeStep {
     }
 
     // For the RecipeDetail step list adapter.
-    public RecipeStep(String stepShortDescription){
+    public RecipeStep(int stepId, String stepShortDescription){
+        this.stepId                 = stepId;
         this.stepShortDescription   = stepShortDescription;
     }
 }

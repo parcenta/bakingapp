@@ -6,17 +6,11 @@
     android:layout_height="match_parent"
     tools:context="com.peterark.bakingapp.bakingapp.RecipeMainActivity">
 
-    <!--<fragment
+    <fragment
         android:id="@+id/recipe_list_fragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:name="com.peterark.bakingapp.bakingapp.MasterRecipeListFragment"
-        tools:layout="@layout/fragment_master_recipe_list" />-->
-
-    <FrameLayout
-        android:id="@+id/master_recipe_list_container"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        />
+        tools:layout="@layout/fragment_master_recipe_list" />
 
 </FrameLayout>

@@ -6,12 +6,15 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.widget.Toast;
 
 import com.peterark.bakingapp.bakingapp.R;
 import com.peterark.bakingapp.bakingapp.panels.recipeDetail.RecipeDetailFragment;
+import com.peterark.bakingapp.bakingapp.panels.recipeDetail.RecipeDetailFragmentStepAdapter;
+import com.peterark.bakingapp.bakingapp.panels.recipeDetailStep.RecipeDetailStepActivity;
 import com.peterark.bakingapp.bakingapp.panels.recipeDetailStep.RecipeDetailStepFragment;
 
-public class RecipeDetailActivity extends AppCompatActivity {
+public class RecipeDetailActivity extends AppCompatActivity implements RecipeDetailFragmentStepAdapter.OnRecipeStepClickHandler{
 
     private static final String RECIPE_ID = "RECIPE_ID";
 
@@ -71,6 +74,15 @@ public class RecipeDetailActivity extends AppCompatActivity {
             if (twoPane)
                 fm.beginTransaction().replace(R.id.recipe_step_detail_container,new RecipeDetailStepFragment()).commit();
         }
+
+    }
+
+    @Override
+    public void onRecipeStepClick(int recipeStepId) {
+        if(twoPane){
+
+        }else
+            RecipeDetailStepActivity.launch(this,recipeId,recipeStepId);
 
     }
 }

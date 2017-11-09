@@ -51,7 +51,7 @@ public class RecipeDetailFragmentStepAdapter extends RecyclerView.Adapter<Recipe
     public void onBindViewHolder(RecipeDetailFragmentStepAdapter.RecipeStepListViewHolder holder, int position) {
         RecipeStep item = mItemList.get(position);
 
-        holder.mBinding.stepNumberTextview.setText(String.valueOf(position+1)); // Like the list in the adapter is ordered by step. We can use the position + 1 as the number of step.
+        holder.mBinding.stepNumberTextview.setText(position == 0 ? "I" : String.valueOf(position)); // Assuming that the one in the position zero is the Introduction "I".
         holder.mBinding.stepShortDescriptionTextview.setText(item.stepShortDescription);
     }
 

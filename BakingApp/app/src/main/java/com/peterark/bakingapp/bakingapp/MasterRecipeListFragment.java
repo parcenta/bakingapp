@@ -85,13 +85,6 @@ public class MasterRecipeListFragment extends Fragment implements LoaderManager.
             protected void onStartLoading() {
                 super.onStartLoading();
 
-                // First Hide the RecyclerView and the Error Message.
-                mBinding.recipeListRecyclerView.setVisibility(View.INVISIBLE);
-                mBinding.recipeListErrorOcurredTextview.setVisibility(View.INVISIBLE);
-
-                // Show Progress Bar.
-                mBinding.recipeListProgressBar.setVisibility(View.VISIBLE);
-
                 // If there is a cachedResponse, we deliver the result.
                 if(cachedResponse!=null) {
                     Timber.d("onStartLoading: Delivering result. Not force loading..");
@@ -99,8 +92,14 @@ public class MasterRecipeListFragment extends Fragment implements LoaderManager.
                 }
                 else // If there is NOT a cachedResponse then forceLoad.
                 {
-
                     Timber.d("onStartLoading: Forcing Load...");
+
+                    // First Hide the RecyclerView and the Error Message.
+                    mBinding.recipeListRecyclerView.setVisibility(View.INVISIBLE);
+                    mBinding.recipeListErrorOcurredTextview.setVisibility(View.INVISIBLE);
+
+                    // Show Progress Bar.
+                    mBinding.recipeListProgressBar.setVisibility(View.VISIBLE);
 
                     // Set the MoviesList to null.
                     mTaskResponse = null;
@@ -153,10 +152,10 @@ public class MasterRecipeListFragment extends Fragment implements LoaderManager.
     @Override
     public void onLoadFinished(Loader<MasterRecipeListResponse> loader, MasterRecipeListResponse response) {
 
+        mTaskResponse = response;
+
         // Hide the Progress Bar.
         mBinding.recipeListProgressBar.setVisibility(View.INVISIBLE);
-
-        mTaskResponse = response;
 
         if (mTaskResponse == null) {
             Toast.makeText(getActivity(), "An error has ocurred. Please try again.", Toast.LENGTH_SHORT).show();
@@ -178,8 +177,6 @@ public class MasterRecipeListFragment extends Fragment implements LoaderManager.
             mBinding.recipeListErrorOcurredTextview.setVisibility(View.VISIBLE);
         else //
             mBinding.recipeListRecyclerView.setVisibility(View.VISIBLE);
-
-
 
     }
 

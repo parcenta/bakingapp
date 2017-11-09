@@ -1,7 +1,5 @@
 package com.peterark.bakingapp.bakingapp.panels.recipeDetail;
 
-import android.app.Activity;
-import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.databinding.DataBindingUtil;
@@ -11,7 +9,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.AsyncTaskLoader;
 import android.support.v4.content.Loader;
-import android.support.v7.app.ActionBar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -46,6 +43,10 @@ public class RecipeDetailFragment extends Fragment implements LoaderManager.Load
 
     RecipeDetailFragmentStepAdapter mAdapter;
 
+    RecipeDetailFragmentStepAdapter.OnRecipeStepClickHandler mHandler;
+
+    RecipeDetailFragmentLoaderResponse mResponse;
+
 
     // Constructor
     public RecipeDetailFragment(){}
@@ -76,6 +77,21 @@ public class RecipeDetailFragment extends Fragment implements LoaderManager.Load
         super.onActivityCreated(savedInstanceState);
         // Init Loader
         getLoaderManager().initLoader(0,null,this);
+    }
+
+    // Override onAttach to make sure that the container activity has implemented the callback
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+
+        // This makes sure that the host activity has implemented the callback interface
+        // If not, it throws an exception
+        try {
+            mHandler = (RecipeDetailFragmentStepAdapter.OnRecipeStepClickHandler) context;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(context.toString()
+                    + " must implement OnImageClickListener");
+        }
     }
 
     @Override
@@ -153,11 +169,12 @@ public class RecipeDetailFragment extends Fragment implements LoaderManager.Load
                             null,
                             RecipeStepContract.RecipeStepEntry.COLUMN_RECIPE_ID + " = ?",
                             new String[]{String.valueOf(mRecipeId)},
-                            null);
+                            RecipeStepContract.RecipeStepEntry.COLUMN_RECIPE_STEP_ID);
                     if(recipeStepCursor.getCount()>0) {
                         while (recipeStepCursor.moveToNext()){
+                            int stepId                  = recipeStepCursor.getInt(recipeStepCursor.getColumnIndex(RecipeStepContract.RecipeStepEntry.COLUMN_RECIPE_STEP_ID));
                             String stepShortDescription = recipeStepCursor.getString(recipeStepCursor.getColumnIndex(RecipeStepContract.RecipeStepEntry.COLUMN_RECIPE_STEP_SHORT_DESCRIPTION));
-                            stepList.add(new RecipeStep(stepShortDescription));
+                            stepList.add(new RecipeStep(stepId, stepShortDescription));
                         }
                     }
                     if (!recipeStepCursor.isClosed()) recipeStepCursor.close();
@@ -186,20 +203,11 @@ public class RecipeDetailFragment extends Fragment implements LoaderManager.Load
 
     @Override
     public void onLoadFinished(Loader<RecipeDetailFragmentLoaderResponse> loader, RecipeDetailFragmentLoaderResponse response) {
-        if (response== null){
-            Toast.makeText(getActivity(),"An error has ocurred. Please try again.",Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        mBinding.recipeNameTextview.setText(response.recipeName);
-        mBinding.ingredientsTextarea.setText(response.ingredientsText);
-        mAdapter.setItemList(response.stepList);
-
-        // Set the recipe name in the Action Bar.
-        Activity parentActivity = getActivity();
-        if (parentActivity != null) {
-            android.app.ActionBar ab = getActivity().getActionBar();
-            if (ab !=null) ab.setTitle(response.recipeName);
+        mResponse = response;
+        if (mResponse!= null){
+            mBinding.recipeNameTextview.setText(response.recipeName);
+            mBinding.ingredientsTextarea.setText(response.ingredientsText);
+            mAdapter.setItemList(response.stepList);
         }
     }
 
@@ -210,7 +218,8 @@ public class RecipeDetailFragment extends Fragment implements LoaderManager.Load
 
     @Override
     public void onRecipeStepClick(int recipeStep) {
-
+        if(mHandler!=null)
+            mHandler.onRecipeStepClick(recipeStep);
     }
 
     public class RecipeDetailFragmentLoaderResponse{

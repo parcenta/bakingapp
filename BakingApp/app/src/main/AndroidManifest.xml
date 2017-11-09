@@ -28,6 +28,10 @@
         <activity android:name=".panels.RecipeDetailActivity"
             android:parentActivityName=".RecipeMainActivity"
             android:label="@string/recipe_detail_activity_action_bar_title"/>
+
+        <activity android:name=".panels.recipeDetailStep.RecipeDetailStepActivity"
+            android:parentActivityName=".panels.RecipeDetailActivity"
+            android:label="@string/recipe_detail_activity_action_bar_title"/>
     </application>
 
 </manifest>
