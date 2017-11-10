@@ -68,11 +68,7 @@ public class RecipeDetailActivity extends AppCompatActivity implements RecipeDet
 
             // Setting the RecipeDetail fragment in the view.
             FragmentManager fm = getSupportFragmentManager();
-            fm.beginTransaction().replace(R.id.recipe_detail_container,recipeDetailFragment).commit();
-
-            // Setting the RecipeDetailStepFragment (if it is Two pane mode).
-            if (twoPane)
-                fm.beginTransaction().replace(R.id.recipe_step_detail_container,new RecipeDetailStepFragment()).commit();
+            fm.beginTransaction().add(R.id.recipe_detail_container,recipeDetailFragment).commit();
         }
 
     }
@@ -80,7 +76,16 @@ public class RecipeDetailActivity extends AppCompatActivity implements RecipeDet
     @Override
     public void onRecipeStepClick(int recipeStepId) {
         if(twoPane){
+            // Create RecipeDetail Fragment
+            Fragment newFragment = new RecipeDetailStepFragment();
+            Bundle args = new Bundle();
+            args.putInt(RecipeDetailStepFragment.RECIPE_ID,recipeId);
+            args.putInt(RecipeDetailStepFragment.RECIPE_STEP_ID,recipeStepId);
+            newFragment.setArguments(args);
 
+            // Setting the RecipeDetail fragment in the view.
+            FragmentManager fm = getSupportFragmentManager();
+            fm.beginTransaction().replace(R.id.recipe_step_detail_container,newFragment).commit();
         }else
             RecipeDetailStepActivity.launch(this,recipeId,recipeStepId);
 

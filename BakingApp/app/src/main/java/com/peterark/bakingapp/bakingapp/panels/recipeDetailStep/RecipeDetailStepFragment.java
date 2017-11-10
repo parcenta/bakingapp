@@ -55,19 +55,40 @@ public class RecipeDetailStepFragment extends Fragment implements LoaderManager.
     FragmentRecipeDetailStepBinding mBinding;
 
     private SimpleExoPlayer mExoPlayer;
-    private SimpleExoPlayerView mPlayerView;
 
     private Cursor mCursor;
 
+    private boolean isTablet;
+
+    public PaginationHandler paginationHandler;
+
     // Empty Constructor
     public RecipeDetailStepFragment(){
+    }
+
+    public interface PaginationHandler{
+        void goToPreviousRecipe();
+        void goToNextRecipe();
+    }
+
+    // Override onAttach to make sure that the container activity has implemented the callback
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+
+        // This makes sure that the host activity has implemented the callback interface
+        // If not, it throws an exception
+        try {
+            paginationHandler = (PaginationHandler) context;
+        } catch (ClassCastException e) {
+            Timber.d("PaginationHandler is not set. Must be a tablet then.");
+        }
     }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         mBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_recipe_detail_step, container, false);
-        //mPlayerView = (SimpleExoPlayerView) mBinding.getRoot().findViewById(R.id.recipe_video_playerview);
 
         // Get the recipe id and recipe step id from the arguments.
         mRecipeId = 0;
@@ -76,6 +97,28 @@ public class RecipeDetailStepFragment extends Fragment implements LoaderManager.
         if (bundle != null) {
             if (bundle.containsKey(RECIPE_ID)) mRecipeId = bundle.getInt(RECIPE_ID);
             if (bundle.containsKey(RECIPE_STEP_ID)) mRecipeStepId = bundle.getInt(RECIPE_STEP_ID);
+        }
+
+        // Check if its a tablet or not. (sw600dp)
+        Context context = getActivity();
+        isTablet = context.getResources().getBoolean(R.bool.isTablet);
+
+        if(isTablet)
+            mBinding.paginationButtonContainer.setVisibility(View.GONE);
+        else {
+            mBinding.paginationButtonContainer.setVisibility(View.VISIBLE);
+            mBinding.actionGoToPreviousStep.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if(paginationHandler!=null)paginationHandler.goToPreviousRecipe();
+                }
+            });
+            mBinding.actionGoToNextStep.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if(paginationHandler!=null)paginationHandler.goToNextRecipe();
+                }
+            });
         }
 
         return mBinding.getRoot();
@@ -117,23 +160,10 @@ public class RecipeDetailStepFragment extends Fragment implements LoaderManager.
                 mBinding.recipeLargeDescriptionTextview.setText(stepDescription);
 
                 // Check if there is valid video url.
-                if (videoUrl.length()>0){
-                    // Hide the Image THumbnail
-                    mBinding.recipeMediaImageContainer.setVisibility(View.GONE);
-
-                    // Show the Video Container and initialize the player
-                    mBinding.recipeMediaVideoContainer.setVisibility(View.VISIBLE);
-                    initializePlayer(Uri.parse(videoUrl));
-                }
-                else if (thumbnailUrl.length()>0) // If we dont have a video Url, but we have a valid image url. then load it with Picasso.
-                {
-                    // Hide the Video Container.
-                    mBinding.recipeMediaVideoContainer.setVisibility(View.GONE);
-
-                    // Show the Image Container and load it with Picasso.
-                    mBinding.recipeMediaVideoContainer.setVisibility(View.VISIBLE);
-                    Picasso.with(getActivity()).load(thumbnailUrl).into(mBinding.recipeMediaImageContainer);
-                }
+                if (videoUrl.length()>0 || thumbnailUrl.length() > 0){
+                    initializePlayer(Uri.parse(videoUrl.length()>0 ? videoUrl : thumbnailUrl));
+                }else
+                    mBinding.recipeVideoPlayerview.setVisibility(View.GONE);
             }
         }
     }

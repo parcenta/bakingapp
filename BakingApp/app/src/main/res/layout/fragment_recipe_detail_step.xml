@@ -7,51 +7,29 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="1">
+            android:layout_weight="1"
+            android:orientation="vertical">
 
+            <com.google.android.exoplayer2.ui.SimpleExoPlayerView
+                android:id="@+id/recipe_video_playerview"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/white_hint"
+                app:resize_mode="fit"
+                />
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_weight="0.4"
-                    android:orientation="horizontal"
-                    android:background="#000"
-                    >
-                    <FrameLayout
-                        android:id="@+id/recipe_media_video_container"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:visibility="gone">
-                        <com.google.android.exoplayer2.ui.SimpleExoPlayerView
-                            android:id="@+id/recipe_video_playerview"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            />
-                    </FrameLayout>
-                    <ImageView
-                        android:id="@+id/recipe_media_image_container"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_gravity="center"
-                        android:scaleType="centerCrop"
-                        android:contentDescription="@string/default_content_description"
-                        android:background="@color/image_placeholder_background"
-                        tools:src="@drawable/ic_cake_white" />
-                </LinearLayout>
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                >
 
                 <ScrollView
                     android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_weight="0.6">
+                    android:layout_height="wrap_content">
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -84,7 +62,6 @@
                             tools:text="This is the large description of the application"/>
                     </LinearLayout>
                 </ScrollView>
-
             </LinearLayout>
         </LinearLayout>
 
@@ -111,7 +88,8 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="0.5"
-                android:gravity="end">
+                android:gravity="end"
+                >
                 <Button
                     android:id="@+id/action_go_to_next_step"
                     android:layout_width="wrap_content"
@@ -119,7 +97,7 @@
                     style="@style/Base.Widget.AppCompat.Button.Borderless.Colored"
                     android:layout_gravity="end"
                     android:text="@string/next_recipe_step"/>
-                </LinearLayout>
+            </LinearLayout>
         </LinearLayout>
 
     </LinearLayout>

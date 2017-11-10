@@ -14,10 +14,7 @@ import com.peterark.bakingapp.bakingapp.panels.recipeDetail.RecipeDetailFragment
  * Created by PETER on 7/11/2017.
  */
 
-public class RecipeDetailStepActivity extends AppCompatActivity {
-
-
-
+public class RecipeDetailStepActivity extends AppCompatActivity implements RecipeDetailStepFragment.PaginationHandler{
 
     private int mRecipeId;
     private int mRecipeStepId;
@@ -54,19 +51,35 @@ public class RecipeDetailStepActivity extends AppCompatActivity {
 
 
         // Setting the fragments.
-        if (savedInstanceState == null){
-            // Create RecipeDetail Fragment
-            Fragment newFragment = new RecipeDetailStepFragment();
-            Bundle args = new Bundle();
-            args.putInt(RecipeDetailStepFragment.RECIPE_ID,mRecipeId);
-            args.putInt(RecipeDetailStepFragment.RECIPE_STEP_ID,mRecipeStepId);
-            newFragment.setArguments(args);
-
-            // Setting the RecipeDetail fragment in the view.
-            FragmentManager fm = getSupportFragmentManager();
-            fm.beginTransaction().replace(R.id.recipe_detail_fragment_holder,newFragment).commit();
-        }
+        if (savedInstanceState == null)
+            createRecipeDetailStepFragment(mRecipeStepId);
 
     }
 
+    @Override
+    public void goToPreviousRecipe() {
+        if(mRecipeStepId<=0) return;
+        mRecipeStepId--;
+        createRecipeDetailStepFragment(mRecipeStepId);
+    }
+
+    @Override
+    public void goToNextRecipe() {
+        if(mRecipeStepId>=10) return;
+        mRecipeStepId++;
+        createRecipeDetailStepFragment(mRecipeStepId);
+    }
+
+    public void createRecipeDetailStepFragment(int recipeStepId){
+        // Create RecipeDetail Fragment
+        Fragment newFragment = new RecipeDetailStepFragment();
+        Bundle args = new Bundle();
+        args.putInt(RecipeDetailStepFragment.RECIPE_ID,mRecipeId);
+        args.putInt(RecipeDetailStepFragment.RECIPE_STEP_ID,recipeStepId);
+        newFragment.setArguments(args);
+
+        // Setting the RecipeDetail fragment in the view.
+        FragmentManager fm = getSupportFragmentManager();
+        fm.beginTransaction().replace(R.id.recipe_detail_fragment_holder,newFragment).commit();
+    }
 }
