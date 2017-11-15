@@ -11,6 +11,7 @@ import com.peterark.bakingapp.bakingapp.database.contracts.RecipeStepContract;
 import com.peterark.bakingapp.bakingapp.helperStructures.Recipe;
 import com.peterark.bakingapp.bakingapp.helperStructures.RecipeIngredient;
 import com.peterark.bakingapp.bakingapp.helperStructures.RecipeStep;
+import com.peterark.bakingapp.bakingapp.widget.BakingIntentService;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -83,6 +84,9 @@ public class BakingDataUtils {
                     context.getContentResolver().insert(RecipeStepContract.RecipeStepEntry.CONTENT_URI,cv);
                 }
             }
+
+            // Update the widget. When the recipe is synced.
+            BakingIntentService.startActionShowTopRecipesInWidget(context);
 
             return "";
 

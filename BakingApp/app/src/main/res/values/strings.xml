@@ -8,8 +8,13 @@
     <string name="default_content_description">Element</string>
     <string name="ingredients_title">Ingredients</string>
     <string name="steps_title">Steps</string>
+    <string name="no_recipes_found">No recipes found</string>
     <string name="next_recipe_step">Next Step &gt;</string>
     <string name="previous_recipe_step">&lt; Previous Step</string>
 
     <string name="recipe_detail_activity_action_bar_title">Recipe Detail</string>
+    <string name="recipe_detail_step_activity_action_bar_title">Step Detail</string>
+    <string name="appwidget_text">EXAMPLE</string>
+    <string name="add_widget">Add widget</string>
+    <string name="widget_title">Recipes</string>
 </resources>

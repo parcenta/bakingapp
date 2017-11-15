@@ -34,6 +34,8 @@ import timber.log.Timber;
 public class RecipeDetailFragment extends Fragment implements LoaderManager.LoaderCallbacks<RecipeDetailFragment.RecipeDetailFragmentLoaderResponse>,
                                                                 RecipeDetailFragmentStepAdapter.OnRecipeStepClickHandler{
 
+    private static final int RECIPE_DETAIL_LOADER_ID = 1001;
+
     // Bundle variables
     public static final String RECIPE_ID = "RECIPE_ID";
     private int mRecipeId;
@@ -76,7 +78,7 @@ public class RecipeDetailFragment extends Fragment implements LoaderManager.Load
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         // Init Loader
-        getLoaderManager().initLoader(0,null,this);
+        getLoaderManager().initLoader(RECIPE_DETAIL_LOADER_ID,null,this);
     }
 
     // Override onAttach to make sure that the container activity has implemented the callback
@@ -98,7 +100,7 @@ public class RecipeDetailFragment extends Fragment implements LoaderManager.Load
     public Loader<RecipeDetailFragmentLoaderResponse> onCreateLoader(int id, Bundle args) {
         return new AsyncTaskLoader<RecipeDetailFragmentLoaderResponse>(getActivity()) {
 
-            RecipeDetailFragmentLoaderResponse cachedResponse;
+            private RecipeDetailFragmentLoaderResponse cachedResponse;
 
             @Override
             protected void onStartLoading() {
@@ -196,7 +198,7 @@ public class RecipeDetailFragment extends Fragment implements LoaderManager.Load
             @Override
             public void deliverResult(RecipeDetailFragmentLoaderResponse response) {
                 cachedResponse = response;
-                super.deliverResult(cachedResponse);
+                super.deliverResult(response);
             }
         };
     }
@@ -204,11 +206,15 @@ public class RecipeDetailFragment extends Fragment implements LoaderManager.Load
     @Override
     public void onLoadFinished(Loader<RecipeDetailFragmentLoaderResponse> loader, RecipeDetailFragmentLoaderResponse response) {
         mResponse = response;
-        if (mResponse!= null){
-            mBinding.recipeNameTextview.setText(response.recipeName);
-            mBinding.ingredientsTextarea.setText(response.ingredientsText);
-            mAdapter.setItemList(response.stepList);
+
+        if (mResponse== null){
+            Toast.makeText(getActivity(),"An error has ocurred",Toast.LENGTH_SHORT).show();
+            return;
         }
+
+        mBinding.recipeNameTextview.setText(response.recipeName);
+        mBinding.ingredientsTextarea.setText(response.ingredientsText);
+        mAdapter.setItemList(response.stepList);
     }
 
     @Override

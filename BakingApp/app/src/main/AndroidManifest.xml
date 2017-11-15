@@ -23,15 +23,31 @@
         <provider
             android:name=".provider.RecipeProvider"
             android:authorities="@string/content_authority"
-            android:exported="false" />
+            android:exported="true"
+            />
 
-        <activity android:name=".panels.RecipeDetailActivity"
-            android:parentActivityName=".RecipeMainActivity"
-            android:label="@string/recipe_detail_activity_action_bar_title"/>
+        <activity
+            android:name=".panels.RecipeDetailActivity"
+            android:label="@string/recipe_detail_activity_action_bar_title"
+            android:parentActivityName=".RecipeMainActivity" />
+        <activity
+            android:name=".panels.recipeDetailStep.RecipeDetailStepActivity"
+            android:label="@string/recipe_detail_step_activity_action_bar_title"
+            android:parentActivityName=".panels.RecipeDetailActivity" />
 
-        <activity android:name=".panels.recipeDetailStep.RecipeDetailStepActivity"
-            android:parentActivityName=".panels.RecipeDetailActivity"
-            android:label="@string/recipe_detail_activity_action_bar_title"/>
+        <receiver android:name=".widget.BakingWidget">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/baking_widget_info" />
+        </receiver>
+
+        <!-- Widgets services -->
+        <service android:name=".widget.BakingIntentService" android:exported="false"/>
+        <service android:name=".widget.BakingWidgetGridService" android:exported="false" android:permission="android.permission.BIND_REMOTEVIEWS"/>
     </application>
 
 </manifest>

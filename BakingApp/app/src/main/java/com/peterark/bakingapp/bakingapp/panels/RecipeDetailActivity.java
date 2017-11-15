@@ -16,13 +16,17 @@ import com.peterark.bakingapp.bakingapp.panels.recipeDetailStep.RecipeDetailStep
 
 public class RecipeDetailActivity extends AppCompatActivity implements RecipeDetailFragmentStepAdapter.OnRecipeStepClickHandler{
 
-    private static final String RECIPE_ID = "RECIPE_ID";
+    public static final String RECIPE_ID = "RECIPE_ID";
 
     // Intent variables
     private int recipeId;
 
     // Responsive Phone/Tablet helper variables
     private boolean twoPane;
+
+
+    private Fragment mRecipeDetailFragment;
+    private Fragment mRecipeDetailStepFragment;
 
     /* -----------------------------------------------------------------
      * Launch Helper
@@ -61,14 +65,19 @@ public class RecipeDetailActivity extends AppCompatActivity implements RecipeDet
         if (savedInstanceState == null){
 
             // Create RecipeDetail Fragment
-            Fragment recipeDetailFragment = new RecipeDetailFragment();
+            mRecipeDetailFragment = new RecipeDetailFragment();
             Bundle args = new Bundle();
             args.putInt(RecipeDetailFragment.RECIPE_ID,recipeId);
-            recipeDetailFragment.setArguments(args);
+            mRecipeDetailFragment.setArguments(args);
 
             // Setting the RecipeDetail fragment in the view.
             FragmentManager fm = getSupportFragmentManager();
-            fm.beginTransaction().add(R.id.recipe_detail_container,recipeDetailFragment).commit();
+            fm.beginTransaction().add(R.id.recipe_detail_container,mRecipeDetailFragment,"recipedetail").commit();
+        }else{
+            mRecipeDetailFragment = getSupportFragmentManager().findFragmentByTag("recipedetail");
+
+            Fragment recipeDetailStepFragment = getSupportFragmentManager().findFragmentByTag("recipedetailstep");
+            if(recipeDetailStepFragment != null) mRecipeDetailStepFragment = recipeDetailStepFragment;
         }
 
     }
@@ -77,17 +86,16 @@ public class RecipeDetailActivity extends AppCompatActivity implements RecipeDet
     public void onRecipeStepClick(int recipeStepId) {
         if(twoPane){
             // Create RecipeDetail Fragment
-            Fragment newFragment = new RecipeDetailStepFragment();
+            mRecipeDetailStepFragment = new RecipeDetailStepFragment();
             Bundle args = new Bundle();
             args.putInt(RecipeDetailStepFragment.RECIPE_ID,recipeId);
             args.putInt(RecipeDetailStepFragment.RECIPE_STEP_ID,recipeStepId);
-            newFragment.setArguments(args);
+            mRecipeDetailStepFragment.setArguments(args);
 
             // Setting the RecipeDetail fragment in the view.
             FragmentManager fm = getSupportFragmentManager();
-            fm.beginTransaction().replace(R.id.recipe_step_detail_container,newFragment).commit();
+            fm.beginTransaction().replace(R.id.recipe_step_detail_container,mRecipeDetailStepFragment,"recipedetailstep").commit();
         }else
             RecipeDetailStepActivity.launch(this,recipeId,recipeStepId);
-
     }
 }
