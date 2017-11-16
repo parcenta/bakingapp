@@ -14,6 +14,8 @@ import com.peterark.bakingapp.bakingapp.panels.recipeDetail.RecipeDetailFragment
 import com.peterark.bakingapp.bakingapp.panels.recipeDetailStep.RecipeDetailStepActivity;
 import com.peterark.bakingapp.bakingapp.panels.recipeDetailStep.RecipeDetailStepFragment;
 
+import timber.log.Timber;
+
 public class RecipeDetailActivity extends AppCompatActivity implements RecipeDetailFragmentStepAdapter.OnRecipeStepClickHandler{
 
     public static final String RECIPE_ID = "RECIPE_ID";
@@ -23,10 +25,6 @@ public class RecipeDetailActivity extends AppCompatActivity implements RecipeDet
 
     // Responsive Phone/Tablet helper variables
     private boolean twoPane;
-
-
-    private Fragment mRecipeDetailFragment;
-    private Fragment mRecipeDetailStepFragment;
 
     /* -----------------------------------------------------------------
      * Launch Helper
@@ -38,7 +36,10 @@ public class RecipeDetailActivity extends AppCompatActivity implements RecipeDet
     private static Intent launchIntent(Context context, int recipeId) {
         Class destinationActivity = RecipeDetailActivity.class;
         Intent intent = new Intent(context, destinationActivity);
-        intent.putExtra(RECIPE_ID, recipeId);
+
+        Bundle bundle = new Bundle();
+        bundle.putInt(RECIPE_ID,recipeId);
+        intent.putExtras(bundle);
         return intent;
     }
 
@@ -47,12 +48,7 @@ public class RecipeDetailActivity extends AppCompatActivity implements RecipeDet
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recipe_detail);
 
-        // Get the RecipeId from the Bundle.
-        Intent receivedIntent = getIntent();
-        if (receivedIntent.hasExtra(RECIPE_ID))
-            recipeId = receivedIntent.getIntExtra(RECIPE_ID,0);
-        else
-            recipeId = 0;
+        Timber.d("RecipeDetailActivity ONCREATE...");
 
         // Check if the Panel is in two panel mode or not.
         if( findViewById(R.id.recipe_step_detail_container) != null)
@@ -60,24 +56,36 @@ public class RecipeDetailActivity extends AppCompatActivity implements RecipeDet
         else
             twoPane = false;
 
+        // Get the RecipeId from the Bundle.
+        if(savedInstanceState==null) {
+            Timber.d("RecipeDetailActivity has NULL savedInstance:");
 
-        // Setting the fragments.
-        if (savedInstanceState == null){
 
+            // --------------------------------------
+            // Getting the Recipe from Intent.
+            // --------------------------------------
+            Timber.d("... then we get the recipeId from getIntent().getExtras()");
+            Intent receivedIntent = getIntent();
+            Bundle bundle = receivedIntent.getExtras();
+            if (bundle!=null && bundle.containsKey(RECIPE_ID))
+                recipeId = bundle.getInt(RECIPE_ID);
+            else
+                recipeId = 0;
+
+            Timber.d("... and we recreate the RecipeDetailFragment.");
+
+            // --------------------------------------
             // Create RecipeDetail Fragment
-            mRecipeDetailFragment = new RecipeDetailFragment();
-            Bundle args = new Bundle();
-            args.putInt(RecipeDetailFragment.RECIPE_ID,recipeId);
-            mRecipeDetailFragment.setArguments(args);
+            // --------------------------------------
+            Fragment recipeDetailFragment = RecipeDetailFragment.newInstance(recipeId);
 
             // Setting the RecipeDetail fragment in the view.
             FragmentManager fm = getSupportFragmentManager();
-            fm.beginTransaction().add(R.id.recipe_detail_container,mRecipeDetailFragment,"recipedetail").commit();
-        }else{
-            mRecipeDetailFragment = getSupportFragmentManager().findFragmentByTag("recipedetail");
+            fm.beginTransaction().add(R.id.recipe_detail_container,recipeDetailFragment).commit();
 
-            Fragment recipeDetailStepFragment = getSupportFragmentManager().findFragmentByTag("recipedetailstep");
-            if(recipeDetailStepFragment != null) mRecipeDetailStepFragment = recipeDetailStepFragment;
+        }else{
+            recipeId = savedInstanceState.getInt(RECIPE_ID);
+            Timber.d("RecipeDetailActivity has VALID savedInstance, so we get the recipeId from the savedInstance...");
         }
 
     }
@@ -86,16 +94,22 @@ public class RecipeDetailActivity extends AppCompatActivity implements RecipeDet
     public void onRecipeStepClick(int recipeStepId) {
         if(twoPane){
             // Create RecipeDetail Fragment
-            mRecipeDetailStepFragment = new RecipeDetailStepFragment();
+            Fragment recipeDetailStepFragment = new RecipeDetailStepFragment();
             Bundle args = new Bundle();
             args.putInt(RecipeDetailStepFragment.RECIPE_ID,recipeId);
             args.putInt(RecipeDetailStepFragment.RECIPE_STEP_ID,recipeStepId);
-            mRecipeDetailStepFragment.setArguments(args);
+            recipeDetailStepFragment.setArguments(args);
 
             // Setting the RecipeDetail fragment in the view.
             FragmentManager fm = getSupportFragmentManager();
-            fm.beginTransaction().replace(R.id.recipe_step_detail_container,mRecipeDetailStepFragment,"recipedetailstep").commit();
+            fm.beginTransaction().replace(R.id.recipe_step_detail_container,recipeDetailStepFragment).commit();
         }else
             RecipeDetailStepActivity.launch(this,recipeId,recipeStepId);
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        outState.putInt(RECIPE_ID,recipeId);
+        super.onSaveInstanceState(outState);
     }
 }

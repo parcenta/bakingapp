@@ -10,6 +10,7 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.AsyncTaskLoader;
 import android.support.v4.content.Loader;
 import android.support.v7.widget.LinearLayoutManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -49,21 +50,39 @@ public class RecipeDetailFragment extends Fragment implements LoaderManager.Load
 
     RecipeDetailFragmentLoaderResponse mResponse;
 
-
     // Constructor
-    public RecipeDetailFragment(){}
+    public RecipeDetailFragment(){
+        Timber.d("RecipeDetailFragment is created.");
+    }
+
+    // Fragment "Instance constructor".
+    // As recomended in StackOverflow post: https://stackoverflow.com/questions/9245408/best-practice-for-instantiating-a-new-android-fragment
+    public static RecipeDetailFragment newInstance(int recipeId){
+        Timber.d("RecipeDetailFragment newInstance with RecipeId:" + recipeId);
+        RecipeDetailFragment fragment = new RecipeDetailFragment();
+
+        Bundle args = new Bundle();
+        args.putInt(RECIPE_ID,recipeId);
+        fragment.setArguments(args);
+
+        return fragment;
+    }
+
+    private int getRecipeId(){
+        Bundle bundle = getArguments();
+        if (bundle!=null)
+            return bundle.getInt(RECIPE_ID,0);
+        else
+            return 0;
+    }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         mBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_recipe_detail, container, false);
 
-        // Get the recipe id from the arguments.
-        Bundle bundle = getArguments();
-        if (bundle != null && bundle.containsKey(RECIPE_ID))
-            mRecipeId = bundle.getInt(RECIPE_ID);
-        else
-            mRecipeId = 0;
+        // Get the RecipeId
+        mRecipeId = getRecipeId();
 
         // Set the Adapter
         mAdapter = new RecipeDetailFragmentStepAdapter(null,this);
@@ -137,11 +156,14 @@ public class RecipeDetailFragment extends Fragment implements LoaderManager.Load
                             RecipeContract.RecipeEntry.COLUMN_RECIPE_ID + " = ?",
                             new String[]{String.valueOf(mRecipeId)},
                             null);
-                    if(recipeCursor !=null && recipeCursor.moveToNext()) {
-                        recipeName = recipeCursor.getString(recipeCursor.getColumnIndex(RecipeContract.RecipeEntry.COLUMN_RECIPE_NAME));
-                        recipeServings = recipeCursor.getInt(recipeCursor.getColumnIndex(RecipeContract.RecipeEntry.COLUMN_RECIPE_SERVINGS));
+                    if(recipeCursor !=null){
+                        if(recipeCursor.moveToNext()) {
+                            recipeName = recipeCursor.getString(recipeCursor.getColumnIndex(RecipeContract.RecipeEntry.COLUMN_RECIPE_NAME));
+                            recipeServings = recipeCursor.getInt(recipeCursor.getColumnIndex(RecipeContract.RecipeEntry.COLUMN_RECIPE_SERVINGS));
+                        }
                         if (!recipeCursor.isClosed()) recipeCursor.close();
                     }
+
 
 
                     // ---------------------------------------------------------------------------------------
@@ -152,7 +174,7 @@ public class RecipeDetailFragment extends Fragment implements LoaderManager.Load
                             RecipeIngredientContract.RecipeIngredientEntry.COLUMN_RECIPE_ID + " = ?",
                             new String[]{String.valueOf(mRecipeId)},
                             null);
-                    if(recipeIngredientCursor.getCount()>0) {
+                    if(recipeIngredientCursor!= null) {
                         while (recipeIngredientCursor.moveToNext()){
                             double quantity = recipeIngredientCursor.getDouble(recipeIngredientCursor.getColumnIndex(RecipeIngredientContract.RecipeIngredientEntry.COLUMN_RECIPE_INGREDIENT_QUANTITY));;
                             String name     = recipeIngredientCursor.getString(recipeIngredientCursor.getColumnIndex(RecipeIngredientContract.RecipeIngredientEntry.COLUMN_RECIPE_INGREDIENT_NAME));;
@@ -160,9 +182,8 @@ public class RecipeDetailFragment extends Fragment implements LoaderManager.Load
 
                             ingredientsText += " - " + String.valueOf(quantity) + " " + measure + " of " + name + "\n";
                         }
+                        if (!recipeIngredientCursor.isClosed()) recipeIngredientCursor.close();
                     }
-                    if (!recipeIngredientCursor.isClosed()) recipeIngredientCursor.close();
-
 
                     // -------------------------------------------------------------------------------------------------
                     // And finally query the selected recipe steps. And put them on the List<RecipeStep> list.
@@ -172,15 +193,14 @@ public class RecipeDetailFragment extends Fragment implements LoaderManager.Load
                             RecipeStepContract.RecipeStepEntry.COLUMN_RECIPE_ID + " = ?",
                             new String[]{String.valueOf(mRecipeId)},
                             RecipeStepContract.RecipeStepEntry.COLUMN_RECIPE_STEP_ID);
-                    if(recipeStepCursor.getCount()>0) {
-                        while (recipeStepCursor.moveToNext()){
+                    if(recipeStepCursor!=null){
+                        while (recipeStepCursor.moveToNext()) {
                             int stepId                  = recipeStepCursor.getInt(recipeStepCursor.getColumnIndex(RecipeStepContract.RecipeStepEntry.COLUMN_RECIPE_STEP_ID));
                             String stepShortDescription = recipeStepCursor.getString(recipeStepCursor.getColumnIndex(RecipeStepContract.RecipeStepEntry.COLUMN_RECIPE_STEP_SHORT_DESCRIPTION));
-                            stepList.add(new RecipeStep(stepId, stepShortDescription));
+                            stepList.add(new RecipeStep(stepId, stepShortDescription)); // Adding it to the list.
                         }
+                        if (!recipeStepCursor.isClosed()) recipeStepCursor.close();
                     }
-                    if (!recipeStepCursor.isClosed()) recipeStepCursor.close();
-
 
                 }catch (Exception e){
                     e.printStackTrace();
@@ -239,5 +259,11 @@ public class RecipeDetailFragment extends Fragment implements LoaderManager.Load
             this.ingredientsText    = ingredientsText;
             this.stepList           = stepList;
         }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt(RECIPE_ID,mRecipeId);
     }
 }

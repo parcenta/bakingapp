@@ -17,7 +17,6 @@
                 android:id="@+id/recipe_video_playerview"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@color/white_hint"
                 app:resize_mode="fit"
                 />
 

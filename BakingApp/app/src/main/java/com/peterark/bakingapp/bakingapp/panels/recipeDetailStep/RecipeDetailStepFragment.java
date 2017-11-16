@@ -58,7 +58,8 @@ public class RecipeDetailStepFragment extends Fragment implements LoaderManager.
 
     private Cursor mCursor;
 
-    private boolean isTablet;
+    boolean isTablet;
+    boolean isInLandscapeMode;
 
     public PaginationHandler paginationHandler;
 
@@ -99,11 +100,12 @@ public class RecipeDetailStepFragment extends Fragment implements LoaderManager.
             if (bundle.containsKey(RECIPE_STEP_ID)) mRecipeStepId = bundle.getInt(RECIPE_STEP_ID);
         }
 
-        // Check if its a tablet or not. (sw600dp)
+        // Get some device current configuration values.
         Context context = getActivity();
-        isTablet = context.getResources().getBoolean(R.bool.isTablet);
+        isTablet            = context.getResources().getBoolean(R.bool.isTablet);
+        isInLandscapeMode   = context.getResources().getBoolean(R.bool.isInLandscapeMode);
 
-        if(isTablet)
+        if(isTablet || isInLandscapeMode) // In any of both cases we hide the pagination buttons.
             mBinding.paginationButtonContainer.setVisibility(View.GONE);
         else {
             mBinding.paginationButtonContainer.setVisibility(View.VISIBLE);
