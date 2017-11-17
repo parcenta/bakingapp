@@ -10,6 +10,8 @@ import android.support.v7.app.AppCompatActivity;
 import com.peterark.bakingapp.bakingapp.R;
 import com.peterark.bakingapp.bakingapp.panels.recipeDetail.RecipeDetailFragment;
 
+import java.util.ArrayList;
+
 /**
  * Created by PETER on 7/11/2017.
  */
@@ -57,26 +59,20 @@ public class RecipeDetailStepActivity extends AppCompatActivity implements Recip
     }
 
     @Override
-    public void goToPreviousRecipe() {
-        if(mRecipeStepId<=0) return;
-        mRecipeStepId--;
-        createRecipeDetailStepFragment(mRecipeStepId);
+    public void goToPreviousRecipe(int previousStepId) {
+        if(previousStepId<0) return;
+        createRecipeDetailStepFragment(previousStepId);
     }
 
     @Override
-    public void goToNextRecipe() {
-        if(mRecipeStepId>=10) return;
-        mRecipeStepId++;
-        createRecipeDetailStepFragment(mRecipeStepId);
+    public void goToNextRecipe(int nextRecipeId) {
+        if(nextRecipeId<0) return;
+        createRecipeDetailStepFragment(nextRecipeId);
     }
 
     public void createRecipeDetailStepFragment(int recipeStepId){
         // Create RecipeDetail Fragment
-        Fragment newFragment = new RecipeDetailStepFragment();
-        Bundle args = new Bundle();
-        args.putInt(RecipeDetailStepFragment.RECIPE_ID,mRecipeId);
-        args.putInt(RecipeDetailStepFragment.RECIPE_STEP_ID,recipeStepId);
-        newFragment.setArguments(args);
+        Fragment newFragment = RecipeDetailStepFragment.newInstance(mRecipeId,recipeStepId);
 
         // Setting the RecipeDetail fragment in the view.
         FragmentManager fm = getSupportFragmentManager();

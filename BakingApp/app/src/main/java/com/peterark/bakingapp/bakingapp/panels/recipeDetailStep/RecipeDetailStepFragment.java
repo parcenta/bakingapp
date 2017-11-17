@@ -2,12 +2,15 @@ package com.peterark.bakingapp.bakingapp.panels.recipeDetailStep;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.database.CursorIndexOutOfBoundsException;
 import android.databinding.DataBindingUtil;
+import android.databinding.adapters.ActionMenuViewBindingAdapter;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
+import android.support.v4.content.AsyncTaskLoader;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.view.LayoutInflater;
@@ -37,7 +40,11 @@ import com.peterark.bakingapp.bakingapp.database.contracts.RecipeContract;
 import com.peterark.bakingapp.bakingapp.database.contracts.RecipeStepContract;
 import com.peterark.bakingapp.bakingapp.databinding.FragmentRecipeDetailStepBinding;
 import com.peterark.bakingapp.bakingapp.helperStructures.RecipeStep;
+import com.peterark.bakingapp.bakingapp.panels.recipeDetail.RecipeDetailFragment;
 import com.squareup.picasso.Picasso;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import timber.log.Timber;
 
@@ -45,7 +52,7 @@ import timber.log.Timber;
  * Created by PETER on 7/11/2017.
  */
 
-public class RecipeDetailStepFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>  {
+public class RecipeDetailStepFragment extends Fragment implements LoaderManager.LoaderCallbacks<RecipeDetailStepFragment.TaskResponse>  {
 
     public static String RECIPE_ID = "RECIPE_ID";
     public static String RECIPE_STEP_ID = "RECIPE_STEP_ID";
@@ -56,7 +63,7 @@ public class RecipeDetailStepFragment extends Fragment implements LoaderManager.
 
     private SimpleExoPlayer mExoPlayer;
 
-    private Cursor mCursor;
+    private TaskResponse mTaskResponse;
 
     boolean isTablet;
     boolean isInLandscapeMode;
@@ -67,9 +74,24 @@ public class RecipeDetailStepFragment extends Fragment implements LoaderManager.
     public RecipeDetailStepFragment(){
     }
 
+
+    // Fragment "Instance constructor".
+    // As recomended in StackOverflow post: https://stackoverflow.com/questions/9245408/best-practice-for-instantiating-a-new-android-fragment
+    public static RecipeDetailStepFragment newInstance(int recipeId,int recipeStepId){
+
+        RecipeDetailStepFragment fragment = new RecipeDetailStepFragment();
+
+        Bundle args = new Bundle();
+        args.putInt(RECIPE_ID,recipeId);
+        args.putInt(RECIPE_STEP_ID,recipeStepId);
+        fragment.setArguments(args);
+
+        return fragment;
+    }
+
     public interface PaginationHandler{
-        void goToPreviousRecipe();
-        void goToNextRecipe();
+        void goToPreviousRecipe(int previousStepId);
+        void goToNextRecipe(int nextRecipeId);
     }
 
     // Override onAttach to make sure that the container activity has implemented the callback
@@ -112,13 +134,13 @@ public class RecipeDetailStepFragment extends Fragment implements LoaderManager.
             mBinding.actionGoToPreviousStep.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if(paginationHandler!=null)paginationHandler.goToPreviousRecipe();
+                    if(paginationHandler!=null)paginationHandler.goToPreviousRecipe(mTaskResponse.previousRecipeStepId);
                 }
             });
             mBinding.actionGoToNextStep.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if(paginationHandler!=null)paginationHandler.goToNextRecipe();
+                    if(paginationHandler!=null)paginationHandler.goToNextRecipe(mTaskResponse.nextRecipeStepId);
                 }
             });
         }
@@ -133,45 +155,136 @@ public class RecipeDetailStepFragment extends Fragment implements LoaderManager.
     }
 
     @Override
-    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        return new CursorLoader(getActivity(),
-                                RecipeStepContract.RecipeStepEntry.CONTENT_URI,
-                                null,
-                                RecipeStepContract.RecipeStepEntry.COLUMN_RECIPE_ID + "= ? AND " + RecipeStepContract.RecipeStepEntry.COLUMN_RECIPE_STEP_ID + "= ?",
-                                new String[]{String.valueOf(mRecipeId),String.valueOf(mRecipeStepId)},
-                                null
-                                );
-    }
+    public Loader<RecipeDetailStepFragment.TaskResponse> onCreateLoader(int id, Bundle args) {
+        return new AsyncTaskLoader<TaskResponse>(getActivity()) {
 
-    @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
-        mCursor = cursor;
+            RecipeDetailStepFragment.TaskResponse cachedResponse;
 
-        if(mCursor != null){
-            if (mCursor.moveToNext()) {
-                int stepId                  = cursor.getInt(cursor.getColumnIndex(RecipeStepContract.RecipeStepEntry.COLUMN_RECIPE_STEP_ID));
-                String stepShortDescription = cursor.getString(cursor.getColumnIndex(RecipeStepContract.RecipeStepEntry.COLUMN_RECIPE_STEP_SHORT_DESCRIPTION));
-                String stepDescription      = cursor.getString(cursor.getColumnIndex(RecipeStepContract.RecipeStepEntry.COLUMN_RECIPE_STEP_DESCRIPTION));
-                String videoUrl             = cursor.getString(cursor.getColumnIndex(RecipeStepContract.RecipeStepEntry.COLUMN_RECIPE_STEP_VIDEO_URL));
-                String thumbnailUrl         = cursor.getString(cursor.getColumnIndex(RecipeStepContract.RecipeStepEntry.COLUMN_RECIPE_STEP_THUMBNAIL_URL));
+            @Override
+            protected void onStartLoading() {
+                super.onStartLoading();
 
-
-                // Now show the elements in the UI
-                mBinding.recipeStepNumberTextview.setText(stepId == 0 ? "I" : String.valueOf(stepId));
-                mBinding.recipeShortDescriptionTextview.setText(stepShortDescription);
-                mBinding.recipeLargeDescriptionTextview.setText(stepDescription);
-
-                // Check if there is valid video url.
-                if (videoUrl.length()>0 || thumbnailUrl.length() > 0){
-                    initializePlayer(Uri.parse(videoUrl.length()>0 ? videoUrl : thumbnailUrl));
-                }else
-                    mBinding.recipeVideoPlayerview.setVisibility(View.GONE);
+                if(cachedResponse!=null)
+                    deliverResult(cachedResponse);
+                else
+                    forceLoad();
             }
-        }
+
+            @Override
+            public TaskResponse loadInBackground() {
+
+                Context context = getContext();
+
+                if(context == null)
+                    return null;
+
+                // Initiating some values.
+                int stepId = 0;
+                String stepShortDescription         = "";
+                String stepDescription              = "";
+                String videoUrl                     = "";
+                String thumbnailUrl                 = "";
+                int previousStepId                  = -1;
+                int nextStepId                      = -1;
+
+
+                // -------------------------------------------------------
+                // FIRST Get Info about the current selected recipe.
+                // -------------------------------------------------------
+                Cursor onRecipeStepCursor = context.getContentResolver().query(RecipeStepContract.RecipeStepEntry.CONTENT_URI,
+                                                                    null,
+                                                                    RecipeStepContract.RecipeStepEntry.COLUMN_RECIPE_ID + "= ? AND " + RecipeStepContract.RecipeStepEntry.COLUMN_RECIPE_STEP_ID + "= ?",
+                                                                    new String[]{String.valueOf(mRecipeId),String.valueOf(mRecipeStepId)},
+                                                                    null
+                                                                    );
+                if(onRecipeStepCursor!=null) {
+                    if(onRecipeStepCursor.moveToNext()) {
+                        stepId = onRecipeStepCursor.getInt(onRecipeStepCursor.getColumnIndex(RecipeStepContract.RecipeStepEntry.COLUMN_RECIPE_STEP_ID));
+                        stepShortDescription = onRecipeStepCursor.getString(onRecipeStepCursor.getColumnIndex(RecipeStepContract.RecipeStepEntry.COLUMN_RECIPE_STEP_SHORT_DESCRIPTION));
+                        stepDescription = onRecipeStepCursor.getString(onRecipeStepCursor.getColumnIndex(RecipeStepContract.RecipeStepEntry.COLUMN_RECIPE_STEP_DESCRIPTION));
+                        videoUrl = onRecipeStepCursor.getString(onRecipeStepCursor.getColumnIndex(RecipeStepContract.RecipeStepEntry.COLUMN_RECIPE_STEP_VIDEO_URL));
+                        thumbnailUrl = onRecipeStepCursor.getString(onRecipeStepCursor.getColumnIndex(RecipeStepContract.RecipeStepEntry.COLUMN_RECIPE_STEP_THUMBNAIL_URL));
+                    }
+                    if(!onRecipeStepCursor.isClosed())onRecipeStepCursor.close();
+                }
+
+                // --------------------------------------------------------------
+                // Now check the previous and next recipe step id.
+                // --------------------------------------------------------------
+
+                // First get all the recipe steps of the current recipe (ordered by RecipeStepId)
+                Cursor allRecipeStepsCursor
+                        = context.getContentResolver().query(RecipeStepContract.RecipeStepEntry.CONTENT_URI,
+                                                            null,
+                                                            RecipeStepContract.RecipeStepEntry.COLUMN_RECIPE_ID + "= ?",
+                                                            new String[]{String.valueOf(mRecipeId)},
+                                                            RecipeStepContract.RecipeStepEntry.COLUMN_RECIPE_STEP_ID);
+
+                List<Integer> stepIdList = new ArrayList<>();
+                if(allRecipeStepsCursor!=null){
+                    while (allRecipeStepsCursor.moveToNext()) {
+                        int recipeStepId = allRecipeStepsCursor.getInt(allRecipeStepsCursor.getColumnIndex(RecipeStepContract.RecipeStepEntry.COLUMN_RECIPE_STEP_ID));
+                        stepIdList.add(recipeStepId);
+                    }
+                    if(!allRecipeStepsCursor.isClosed()) allRecipeStepsCursor.close();
+                }
+
+                // Now with the previous list of recipe steps ids we check the previous and next.
+                int currentStepIndex = stepIdList.indexOf(mRecipeStepId);
+                if(currentStepIndex>=0){
+                    int previousIndex   = currentStepIndex-1;
+                    int nextIndex       = currentStepIndex+1;
+
+                    // Set the Previous Step (if the previous list index is valid)
+                    if(previousIndex>=0)
+                        previousStepId  = stepIdList.get(previousIndex);
+
+                    // Set the Next Step (if the next list index is valid)
+                    if(nextIndex<=stepIdList.size()-1)
+                        nextStepId      = stepIdList.get(nextIndex);
+                }
+
+
+                return new TaskResponse(stepId,stepShortDescription,stepDescription,videoUrl,thumbnailUrl,previousStepId,nextStepId);
+            }
+
+
+            @Override
+            public void deliverResult(TaskResponse response) {
+                cachedResponse = response;
+                super.deliverResult(response);
+            }
+        };
+
+
     }
 
     @Override
-    public void onLoaderReset(Loader<Cursor> loader) {
+    public void onLoadFinished(Loader<TaskResponse> loader, TaskResponse response) {
+
+        mTaskResponse = response;
+
+        if(mTaskResponse==null)
+            return;
+
+        // Now show the elements in the UI
+        mBinding.recipeStepNumberTextview.setText(response.stepId == 0 ? "I" : String.valueOf(response.stepId));
+        mBinding.recipeShortDescriptionTextview.setText(response.stepShortDescription);
+        mBinding.recipeLargeDescriptionTextview.setText(response.stepDescription);
+
+        // Check if there is valid video url.
+        if (response.videoUrl.length()>0 || response.thumbnailUrl.length() > 0){
+            initializePlayer(Uri.parse(response.videoUrl.length()>0 ? response.videoUrl : response.thumbnailUrl));
+        }else
+            mBinding.recipeVideoPlayerview.setVisibility(View.GONE);
+
+        // Show/Hide Pagination buttons.
+        if(response.previousRecipeStepId==-1) mBinding.actionGoToPreviousStep.setVisibility(View.GONE);
+        if(response.nextRecipeStepId==-1) mBinding.actionGoToNextStep.setVisibility(View.GONE);
+    }
+
+    @Override
+    public void onLoaderReset(Loader<RecipeDetailStepFragment.TaskResponse> loader) {
 
     }
 
@@ -207,6 +320,26 @@ public class RecipeDetailStepFragment extends Fragment implements LoaderManager.
             mExoPlayer.stop();
             mExoPlayer.release();
             mExoPlayer = null;
+        }
+    }
+
+    class TaskResponse{
+        public int stepId;
+        public String stepShortDescription;
+        public String stepDescription;
+        public String videoUrl;
+        public String thumbnailUrl;
+        public int previousRecipeStepId;
+        public int nextRecipeStepId;
+
+        public TaskResponse(int stepId, String stepShortDescription, String stepDescription, String videoUrl, String thumbnailUrl, int previousRecipeStepId, int nextRecipeStepId) {
+            this.stepId                 = stepId;
+            this.stepShortDescription   = stepShortDescription;
+            this.stepDescription        = stepDescription;
+            this.videoUrl               = videoUrl;
+            this.thumbnailUrl           = thumbnailUrl;
+            this.previousRecipeStepId   = previousRecipeStepId;
+            this.nextRecipeStepId       = nextRecipeStepId;
         }
     }
 }

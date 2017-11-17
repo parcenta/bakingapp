@@ -94,11 +94,7 @@ public class RecipeDetailActivity extends AppCompatActivity implements RecipeDet
     public void onRecipeStepClick(int recipeStepId) {
         if(twoPane){
             // Create RecipeDetail Fragment
-            Fragment recipeDetailStepFragment = new RecipeDetailStepFragment();
-            Bundle args = new Bundle();
-            args.putInt(RecipeDetailStepFragment.RECIPE_ID,recipeId);
-            args.putInt(RecipeDetailStepFragment.RECIPE_STEP_ID,recipeStepId);
-            recipeDetailStepFragment.setArguments(args);
+            Fragment recipeDetailStepFragment = RecipeDetailStepFragment.newInstance(recipeId,recipeStepId);
 
             // Setting the RecipeDetail fragment in the view.
             FragmentManager fm = getSupportFragmentManager();
