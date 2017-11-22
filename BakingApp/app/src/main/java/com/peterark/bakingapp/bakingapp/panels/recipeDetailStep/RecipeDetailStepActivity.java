@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 
 import com.peterark.bakingapp.bakingapp.R;
@@ -50,7 +51,13 @@ public class RecipeDetailStepActivity extends AppCompatActivity implements Recip
         if (receivedIntent.hasExtra(RecipeDetailStepFragment.RECIPE_STEP_ID))
             mRecipeStepId = receivedIntent.getIntExtra(RecipeDetailStepFragment.RECIPE_STEP_ID,0);
 
-
+        // Like this acitivty is called only on non-tablet devices. Then we just check if we are in landsacpe mode...
+        // to show the video in full screen.
+        boolean isInLandscapeMode  = getResources().getBoolean(R.bool.isInLandscapeMode);
+        if(isInLandscapeMode){
+            ActionBar ab = getSupportActionBar();
+            if (ab != null) ab.hide();
+        }
 
         // Setting the fragments.
         if (savedInstanceState == null)

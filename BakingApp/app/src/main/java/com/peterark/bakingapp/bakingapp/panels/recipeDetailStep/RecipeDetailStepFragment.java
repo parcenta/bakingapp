@@ -274,9 +274,13 @@ public class RecipeDetailStepFragment extends Fragment implements LoaderManager.
 
         // Check if there is valid video url.
         if (response.videoUrl.length()>0 || response.thumbnailUrl.length() > 0){
+            mBinding.noMediaAvailableTextview.setVisibility(View.GONE);
+            mBinding.recipeVideoPlayerview.setVisibility(View.VISIBLE);
             initializePlayer(Uri.parse(response.videoUrl.length()>0 ? response.videoUrl : response.thumbnailUrl));
-        }else
+        }else {
             mBinding.recipeVideoPlayerview.setVisibility(View.GONE);
+            mBinding.noMediaAvailableTextview.setVisibility(View.VISIBLE);
+        }
 
         // Show/Hide Pagination buttons.
         if(response.previousRecipeStepId==-1) mBinding.actionGoToPreviousStep.setVisibility(View.GONE);

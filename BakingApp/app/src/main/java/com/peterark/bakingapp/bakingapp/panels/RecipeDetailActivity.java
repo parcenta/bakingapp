@@ -33,7 +33,7 @@ public class RecipeDetailActivity extends AppCompatActivity implements RecipeDet
         context.startActivity(launchIntent(context, recipeId));
     }
 
-    private static Intent launchIntent(Context context, int recipeId) {
+    public static Intent launchIntent(Context context, int recipeId) {
         Class destinationActivity = RecipeDetailActivity.class;
         Intent intent = new Intent(context, destinationActivity);
 

@@ -3,13 +3,12 @@ package com.peterark.bakingapp.bakingapp.widget;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
-import android.os.Bundle;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
 
 import com.peterark.bakingapp.bakingapp.R;
-import com.peterark.bakingapp.bakingapp.database.contracts.RecipeContract;
-import com.peterark.bakingapp.bakingapp.panels.RecipeDetailActivity;
+import com.peterark.bakingapp.bakingapp.database.contracts.RecipeIngredientContract;
+import com.peterark.bakingapp.bakingapp.utils.BakingDataUtils;
 
 /**
  * Created by PETER on 14/11/2017.
@@ -39,12 +38,16 @@ class BakingWidgetGridRemoteViewsFactory implements RemoteViewsService.RemoteVie
 
     @Override
     public void onDataSetChanged() {
-        // GET TOP 5 recipes (ordered by index)
-        mCursor = mContext.getContentResolver().query(RecipeContract.RecipeEntry.CONTENT_URI,
+
+        int recipeId = BakingDataUtils.getWidgetSelectedRecipeId(mContext);
+        if(mCursor !=null && !mCursor.isClosed()) mCursor.close();
+
+        // Get Recipe Ingredients Cursor.
+        mCursor = mContext.getContentResolver().query(RecipeIngredientContract.RecipeIngredientEntry.CONTENT_URI,
                 null,
-                null,
-                null,
-                RecipeContract.RecipeEntry.COLUMN_RECIPE_ID);
+                RecipeIngredientContract.RecipeIngredientEntry.COLUMN_RECIPE_ID + " = ?",
+                new String[]{String.valueOf(recipeId)},
+                null);
     }
 
     @Override
@@ -64,19 +67,15 @@ class BakingWidgetGridRemoteViewsFactory implements RemoteViewsService.RemoteVie
             return null;
         if(mCursor.moveToPosition(position)){
             // Get Cursor values
-            int recipeId      = mCursor.getInt(mCursor.getColumnIndex(RecipeContract.RecipeEntry.COLUMN_RECIPE_ID));
-            String recipeName = mCursor.getString(mCursor.getColumnIndex(RecipeContract.RecipeEntry.COLUMN_RECIPE_NAME));
+            int ingredienteQuantity         = mCursor.getInt(mCursor.getColumnIndex(RecipeIngredientContract.RecipeIngredientEntry.COLUMN_RECIPE_INGREDIENT_QUANTITY));
+            String ingredientName           = mCursor.getString(mCursor.getColumnIndex(RecipeIngredientContract.RecipeIngredientEntry.COLUMN_RECIPE_INGREDIENT_NAME));
+            String ingredientMeasure        = mCursor.getString(mCursor.getColumnIndex(RecipeIngredientContract.RecipeIngredientEntry.COLUMN_RECIPE_INGREDIENT_MEASURE));
+
+            String ingredientLabel = ingredienteQuantity + " " + ingredientMeasure + " of " + ingredientName;
 
             // Set Layout.
             RemoteViews remoteViews = new RemoteViews(mContext.getPackageName(), R.layout.list_item_baking_widget);
-            remoteViews.setTextViewText(R.id.baking_widget_grid_recipe_name_text_view,recipeName);
-
-            // Set the Parameters for the onClick action which lauch the Pending Intent with the next specified values.
-            Bundle extras = new Bundle();
-            extras.putInt(RecipeDetailActivity.RECIPE_ID,recipeId);
-            Intent fillInIntent = new Intent();
-            fillInIntent.putExtras(extras);
-            remoteViews.setOnClickFillInIntent(R.id.baking_grid_view_item,fillInIntent);
+            remoteViews.setTextViewText(R.id.baking_widget_grid_recipe_name_text_view,ingredientLabel);
 
             return remoteViews;
         }

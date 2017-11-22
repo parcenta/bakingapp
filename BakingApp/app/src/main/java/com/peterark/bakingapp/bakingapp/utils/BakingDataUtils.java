@@ -2,6 +2,7 @@ package com.peterark.bakingapp.bakingapp.utils;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.util.Log;
 
 import com.peterark.bakingapp.bakingapp.BuildConfig;
@@ -12,6 +13,7 @@ import com.peterark.bakingapp.bakingapp.helperStructures.Recipe;
 import com.peterark.bakingapp.bakingapp.helperStructures.RecipeIngredient;
 import com.peterark.bakingapp.bakingapp.helperStructures.RecipeStep;
 import com.peterark.bakingapp.bakingapp.widget.BakingIntentService;
+import com.peterark.bakingapp.bakingapp.widget.BakingWidget;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -85,9 +87,6 @@ public class BakingDataUtils {
                 }
             }
 
-            // Update the widget. When the recipe is synced.
-            BakingIntentService.startActionShowTopRecipesInWidget(context);
-
             return "";
 
         } catch (Exception e) {
@@ -160,5 +159,20 @@ public class BakingDataUtils {
 
         return recipeList;
 
+    }
+
+    public static int getWidgetSelectedRecipeId(Context context){
+        SharedPreferences prefs = context.getSharedPreferences("prefs",Context.MODE_PRIVATE);
+        if (prefs!=null)
+            return prefs.getInt(BakingWidget.WIDGET_SELECTED_RECIPE_ID,0);
+        else
+            return 0;
+    }
+
+    public static void setWidgetSelectedRecipeId(Context context,int recipeId){
+        SharedPreferences prefs = context.getSharedPreferences("prefs",Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putInt(BakingWidget.WIDGET_SELECTED_RECIPE_ID, recipeId);
+        editor.commit();
     }
 }

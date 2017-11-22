@@ -1,9 +1,14 @@
+
+<!-- Recipe Ingredients Detail -->
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
+
     <LinearLayout
+        android:id="@+id/widget_recipe_link_to_recipe_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
@@ -17,22 +22,52 @@
             android:src="@drawable/ic_cake_white"
             android:contentDescription="@string/default_content_description"/>
         <TextView
-            android:layout_width="match_parent"
+            android:id="@+id/widget_recipe_name_text_view"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="@string/widget_title"
+            android:layout_weight="1"
             android:textColor="@color/white_primary"
             android:layout_marginLeft="8dp"
             android:layout_marginStart="8dp"
             android:textSize="18sp"
             android:textStyle="bold"
             android:maxLines="1"
-            android:ellipsize="end"/>
+            android:ellipsize="end"
+            tools:text="Cake Chocolate"/>
     </LinearLayout>
 
-    <GridView
-        android:id="@+id/baking_widget_grid_view"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:src="@drawable/ic_cake_white"
-        android:contentDescription="@string/default_content_description"/>
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:background="#FFF">
+
+
+        <!-- Ingredients Grid View -->
+        <GridView
+            android:id="@+id/baking_widget_grid_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:src="@drawable/ic_cake_white"
+            android:scrollbarAlwaysDrawVerticalTrack="true"
+            android:fadeScrollbars="false"
+            android:contentDescription="@string/default_content_description"
+            tools:visibility="gone"/>
+
+        <!-- No selected recipe message -->
+        <TextView
+            android:id="@+id/widget_no_recipe_selected_textview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:padding="16dp"
+            android:text="@string/widget_no_selected_recipe"
+            android:textColor="@color/black_hint"
+            android:visibility="visible"
+            />
+
+    </LinearLayout>
+
 </LinearLayout>

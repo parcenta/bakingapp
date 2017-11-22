@@ -10,7 +10,6 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.AsyncTaskLoader;
 import android.support.v4.content.Loader;
 import android.support.v7.widget.LinearLayoutManager;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,6 +21,8 @@ import com.peterark.bakingapp.bakingapp.database.contracts.RecipeIngredientContr
 import com.peterark.bakingapp.bakingapp.database.contracts.RecipeStepContract;
 import com.peterark.bakingapp.bakingapp.databinding.FragmentRecipeDetailBinding;
 import com.peterark.bakingapp.bakingapp.helperStructures.RecipeStep;
+import com.peterark.bakingapp.bakingapp.utils.BakingDataUtils;
+import com.peterark.bakingapp.bakingapp.widget.BakingIntentService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -210,6 +211,12 @@ public class RecipeDetailFragment extends Fragment implements LoaderManager.Load
                     if (recipeIngredientCursor!= null && !recipeIngredientCursor.isClosed()) recipeIngredientCursor.close();
                     if (recipeStepCursor!= null && !recipeStepCursor.isClosed()) recipeStepCursor.close();
                 }
+
+                // Set the Selected Recipe for the widget
+                BakingDataUtils.setWidgetSelectedRecipeId(context,mRecipeId);
+
+                // Update the widget. When the recipe is selected.
+                BakingIntentService.startActionShowSelectedRecipeIngredientsInWidget(context);
 
                 // If nothing happens before, then i should have valid data at this point.
                 return new RecipeDetailFragmentLoaderResponse(recipeName,recipeServings,ingredientsText,stepList);

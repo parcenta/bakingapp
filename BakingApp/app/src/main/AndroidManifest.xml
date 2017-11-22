@@ -29,10 +29,10 @@
 
         <activity
             android:name=".panels.RecipeDetailActivity"
-            android:label="@string/recipe_detail_activity_action_bar_title" />
+            android:label="@string/recipe_detail_activity_action_bar_title"/>
         <activity
             android:name=".panels.recipeDetailStep.RecipeDetailStepActivity"
-            android:label="@string/recipe_detail_step_activity_action_bar_title" />
+            android:label="@string/recipe_detail_step_activity_action_bar_title"/>
 
         <receiver android:name=".widget.BakingWidget">
             <intent-filter>
