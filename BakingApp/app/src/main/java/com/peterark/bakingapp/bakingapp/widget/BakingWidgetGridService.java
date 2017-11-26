@@ -10,6 +10,8 @@ import com.peterark.bakingapp.bakingapp.R;
 import com.peterark.bakingapp.bakingapp.database.contracts.RecipeIngredientContract;
 import com.peterark.bakingapp.bakingapp.utils.BakingDataUtils;
 
+import timber.log.Timber;
+
 /**
  * Created by PETER on 14/11/2017.
  */
@@ -24,7 +26,7 @@ public class BakingWidgetGridService extends RemoteViewsService {
 
 class BakingWidgetGridRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory {
 
-    private Context mContext;
+    private final Context mContext;
     private Cursor mCursor;
 
     BakingWidgetGridRemoteViewsFactory(Context context){
@@ -38,6 +40,8 @@ class BakingWidgetGridRemoteViewsFactory implements RemoteViewsService.RemoteVie
 
     @Override
     public void onDataSetChanged() {
+
+        Timber.d("Widget Adapter refreshing.");
 
         int recipeId = BakingDataUtils.getWidgetSelectedRecipeId(mContext);
         if(mCursor !=null && !mCursor.isClosed()) mCursor.close();

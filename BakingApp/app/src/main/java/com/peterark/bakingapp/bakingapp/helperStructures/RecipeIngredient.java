@@ -6,9 +6,9 @@ package com.peterark.bakingapp.bakingapp.helperStructures;
 
 public class RecipeIngredient {
 
-    public String ingredientName;
-    public double ingredientQuantity;
-    public String ingredientMeasure;
+    public final String ingredientName;
+    public final double ingredientQuantity;
+    public final String ingredientMeasure;
 
     public RecipeIngredient(String ingredientName, double ingredientQuantity, String ingredientMeasure){
         this.ingredientName     = ingredientName;

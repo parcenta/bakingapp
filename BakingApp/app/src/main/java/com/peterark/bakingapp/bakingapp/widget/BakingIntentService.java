@@ -6,12 +6,10 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
-import android.net.Uri;
 import android.support.annotation.Nullable;
 
 import com.peterark.bakingapp.bakingapp.R;
 import com.peterark.bakingapp.bakingapp.database.contracts.RecipeContract;
-import com.peterark.bakingapp.bakingapp.helperStructures.Recipe;
 import com.peterark.bakingapp.bakingapp.utils.BakingDataUtils;
 
 import timber.log.Timber;
@@ -22,7 +20,7 @@ import timber.log.Timber;
 
 public class BakingIntentService extends IntentService {
 
-    public static final String ACTION_WIDGET_SHOW_SELECTED_RECIPE_INGREDIENTS = "ACTION_WIDGET_SHOW_SELECTED_RECIPE_INGREDIENTS";
+    private static final String ACTION_WIDGET_SHOW_SELECTED_RECIPE_INGREDIENTS = "ACTION_WIDGET_SHOW_SELECTED_RECIPE_INGREDIENTS";
 
     public BakingIntentService(){
         super("BakingIntentService");
@@ -60,8 +58,8 @@ public class BakingIntentService extends IntentService {
 
         // Refresh the Widget
         AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(this);
-        int[] appWidgetsIds = appWidgetManager.getAppWidgetIds(new ComponentName(this, BakingWidget.class));
+        int[] appWidgetsIds = appWidgetManager.getAppWidgetIds(new ComponentName(this, BakingWidgetProvider.class));
         appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetsIds, R.id.baking_widget_grid_view);
-        BakingWidget.updateBakingWidgets(this,appWidgetManager,appWidgetsIds,selectedRecipeId,selectedRecipeName);
+        BakingWidgetProvider.updateBakingWidgets(this,appWidgetManager,appWidgetsIds,selectedRecipeId,selectedRecipeName);
     }
 }

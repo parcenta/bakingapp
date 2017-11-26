@@ -39,17 +39,17 @@ public class RecipeDetailFragment extends Fragment implements LoaderManager.Load
     private static final int RECIPE_DETAIL_LOADER_ID = 1001;
 
     // Bundle variables
-    public static final String RECIPE_ID = "RECIPE_ID";
+    private static final String RECIPE_ID = "RECIPE_ID";
     private int mRecipeId;
 
 
-    FragmentRecipeDetailBinding mBinding;
+    private FragmentRecipeDetailBinding mBinding;
 
-    RecipeDetailFragmentStepAdapter mAdapter;
+    private RecipeDetailFragmentStepAdapter mAdapter;
 
-    RecipeDetailFragmentStepAdapter.OnRecipeStepClickHandler mHandler;
+    private RecipeDetailFragmentStepAdapter.OnRecipeStepClickHandler mHandler;
 
-    RecipeDetailFragmentLoaderResponse mResponse;
+    private RecipeDetailFragmentLoaderResponse mResponse;
 
     // Constructor
     public RecipeDetailFragment(){
@@ -177,9 +177,9 @@ public class RecipeDetailFragment extends Fragment implements LoaderManager.Load
                             null);
                     if(recipeIngredientCursor!= null) {
                         while (recipeIngredientCursor.moveToNext()){
-                            double quantity = recipeIngredientCursor.getDouble(recipeIngredientCursor.getColumnIndex(RecipeIngredientContract.RecipeIngredientEntry.COLUMN_RECIPE_INGREDIENT_QUANTITY));;
-                            String name     = recipeIngredientCursor.getString(recipeIngredientCursor.getColumnIndex(RecipeIngredientContract.RecipeIngredientEntry.COLUMN_RECIPE_INGREDIENT_NAME));;
-                            String measure  = recipeIngredientCursor.getString(recipeIngredientCursor.getColumnIndex(RecipeIngredientContract.RecipeIngredientEntry.COLUMN_RECIPE_INGREDIENT_MEASURE));;
+                            double quantity = recipeIngredientCursor.getDouble(recipeIngredientCursor.getColumnIndex(RecipeIngredientContract.RecipeIngredientEntry.COLUMN_RECIPE_INGREDIENT_QUANTITY));
+                            String name     = recipeIngredientCursor.getString(recipeIngredientCursor.getColumnIndex(RecipeIngredientContract.RecipeIngredientEntry.COLUMN_RECIPE_INGREDIENT_NAME));
+                            String measure  = recipeIngredientCursor.getString(recipeIngredientCursor.getColumnIndex(RecipeIngredientContract.RecipeIngredientEntry.COLUMN_RECIPE_INGREDIENT_MEASURE));
 
                             ingredientsText += " - " + String.valueOf(quantity) + " " + measure + " of " + name + "\n";
                         }
@@ -256,10 +256,10 @@ public class RecipeDetailFragment extends Fragment implements LoaderManager.Load
     }
 
     public class RecipeDetailFragmentLoaderResponse{
-        public String recipeName;
-        public int recipeServings;
-        public String ingredientsText;
-        public List<RecipeStep> stepList;
+        final String recipeName;
+        final int recipeServings;
+        final String ingredientsText;
+        final List<RecipeStep> stepList;
         public RecipeDetailFragmentLoaderResponse(String recipeName,int recipeServings, String ingredientsText, List<RecipeStep> stepList){
             this.recipeName         = recipeName;
             this.recipeServings     = recipeServings;

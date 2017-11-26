@@ -20,7 +20,7 @@ public class NetworkUtils {
 
     public final static int LOAD_RECIPE_LIST = 1001;
 
-    public static String BAKING_RECIPE_WS_URL = "https://d17h27t6h515a5.cloudfront.net/topher/2017/May/59121517_baking/baking.json";
+    private static String BAKING_RECIPE_WS_URL = "https://d17h27t6h515a5.cloudfront.net/topher/2017/May/59121517_baking/baking.json";
 
     public static URL buildUrl(int requestMode) {
 

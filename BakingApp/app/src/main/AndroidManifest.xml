@@ -34,7 +34,7 @@
             android:name=".panels.recipeDetailStep.RecipeDetailStepActivity"
             android:label="@string/recipe_detail_step_activity_action_bar_title"/>
 
-        <receiver android:name=".widget.BakingWidget">
+        <receiver android:name=".widget.BakingWidgetProvider">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>

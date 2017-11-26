@@ -9,9 +9,6 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 
 import com.peterark.bakingapp.bakingapp.R;
-import com.peterark.bakingapp.bakingapp.panels.recipeDetail.RecipeDetailFragment;
-
-import java.util.ArrayList;
 
 /**
  * Created by PETER on 7/11/2017.
@@ -19,8 +16,8 @@ import java.util.ArrayList;
 
 public class RecipeDetailStepActivity extends AppCompatActivity implements RecipeDetailStepFragment.PaginationHandler{
 
-    private int mRecipeId;
-    private int mRecipeStepId;
+    int mRecipeId;
+    int mRecipeStepId;
 
     /* -----------------------------------------------------------------
      * Launch Helper
@@ -77,7 +74,7 @@ public class RecipeDetailStepActivity extends AppCompatActivity implements Recip
         createRecipeDetailStepFragment(nextRecipeId);
     }
 
-    public void createRecipeDetailStepFragment(int recipeStepId){
+    private void createRecipeDetailStepFragment(int recipeStepId){
         // Create RecipeDetail Fragment
         Fragment newFragment = RecipeDetailStepFragment.newInstance(mRecipeId,recipeStepId);
 

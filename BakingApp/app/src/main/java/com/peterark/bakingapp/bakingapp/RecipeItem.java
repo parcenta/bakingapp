@@ -5,9 +5,9 @@ package com.peterark.bakingapp.bakingapp;
  */
 
 public class RecipeItem {
-    public int recipeId;
-    public String recipeName;
-    public int recipeServings;
+    public final int recipeId;
+    public final String recipeName;
+    public final int recipeServings;
     public RecipeItem(int recipeId, String recipeName, int recipeServings){
         this.recipeId       = recipeId;
         this.recipeName     = recipeName;

@@ -18,8 +18,8 @@ import java.util.List;
 public class MasterRecipeListAdapter extends RecyclerView.Adapter<MasterRecipeListAdapter.RecipeListViewHolder>{
 
 
-    public List<RecipeItem> mItemList;
-    public OnRecipeClickHandler mHandler;
+    private List<RecipeItem> mItemList;
+    private final OnRecipeClickHandler mHandler;
 
 
     public MasterRecipeListAdapter(List<RecipeItem> itemList, OnRecipeClickHandler handler){
@@ -61,7 +61,7 @@ public class MasterRecipeListAdapter extends RecyclerView.Adapter<MasterRecipeLi
 
     public class RecipeListViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
 
-        ListItemMasterRecipeListBinding mBinding;
+        final ListItemMasterRecipeListBinding mBinding;
 
         private RecipeListViewHolder(ListItemMasterRecipeListBinding binding){
             super(binding.getRoot());

@@ -2,47 +2,32 @@ package com.peterark.bakingapp.bakingapp.panels.recipeDetailStep;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.database.CursorIndexOutOfBoundsException;
 import android.databinding.DataBindingUtil;
-import android.databinding.adapters.ActionMenuViewBindingAdapter;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.AsyncTaskLoader;
-import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import com.google.android.exoplayer2.DefaultLoadControl;
-import com.google.android.exoplayer2.ExoPlaybackException;
-import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.ExoPlayerFactory;
 import com.google.android.exoplayer2.LoadControl;
 import com.google.android.exoplayer2.SimpleExoPlayer;
-import com.google.android.exoplayer2.Timeline;
 import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory;
 import com.google.android.exoplayer2.source.ExtractorMediaSource;
 import com.google.android.exoplayer2.source.MediaSource;
-import com.google.android.exoplayer2.source.TrackGroupArray;
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
-import com.google.android.exoplayer2.trackselection.TrackSelectionArray;
 import com.google.android.exoplayer2.trackselection.TrackSelector;
-import com.google.android.exoplayer2.ui.SimpleExoPlayerView;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
 import com.peterark.bakingapp.bakingapp.R;
-import com.peterark.bakingapp.bakingapp.database.contracts.RecipeContract;
 import com.peterark.bakingapp.bakingapp.database.contracts.RecipeStepContract;
 import com.peterark.bakingapp.bakingapp.databinding.FragmentRecipeDetailStepBinding;
-import com.peterark.bakingapp.bakingapp.helperStructures.RecipeStep;
-import com.peterark.bakingapp.bakingapp.panels.recipeDetail.RecipeDetailFragment;
-import com.squareup.picasso.Picasso;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -54,21 +39,21 @@ import timber.log.Timber;
 
 public class RecipeDetailStepFragment extends Fragment implements LoaderManager.LoaderCallbacks<RecipeDetailStepFragment.TaskResponse>  {
 
-    public static String RECIPE_ID = "RECIPE_ID";
-    public static String RECIPE_STEP_ID = "RECIPE_STEP_ID";
+    public static final String RECIPE_ID = "RECIPE_ID";
+    public static final String RECIPE_STEP_ID = "RECIPE_STEP_ID";
     private int mRecipeId;
     private int mRecipeStepId;
 
-    FragmentRecipeDetailStepBinding mBinding;
+    private FragmentRecipeDetailStepBinding mBinding;
 
     private SimpleExoPlayer mExoPlayer;
 
     private TaskResponse mTaskResponse;
 
-    boolean isTablet;
-    boolean isInLandscapeMode;
+    private boolean isTablet;
+    private boolean isInLandscapeMode;
 
-    public PaginationHandler paginationHandler;
+    private PaginationHandler paginationHandler;
 
     // Empty Constructor
     public RecipeDetailStepFragment(){
@@ -328,15 +313,15 @@ public class RecipeDetailStepFragment extends Fragment implements LoaderManager.
     }
 
     class TaskResponse{
-        public int stepId;
-        public String stepShortDescription;
-        public String stepDescription;
-        public String videoUrl;
-        public String thumbnailUrl;
-        public int previousRecipeStepId;
-        public int nextRecipeStepId;
+        final int stepId;
+        final String stepShortDescription;
+        final String stepDescription;
+        final String videoUrl;
+        final String thumbnailUrl;
+        final int previousRecipeStepId;
+        final int nextRecipeStepId;
 
-        public TaskResponse(int stepId, String stepShortDescription, String stepDescription, String videoUrl, String thumbnailUrl, int previousRecipeStepId, int nextRecipeStepId) {
+        TaskResponse(int stepId, String stepShortDescription, String stepDescription, String videoUrl, String thumbnailUrl, int previousRecipeStepId, int nextRecipeStepId) {
             this.stepId                 = stepId;
             this.stepShortDescription   = stepShortDescription;
             this.stepDescription        = stepDescription;

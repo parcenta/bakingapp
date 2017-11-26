@@ -7,11 +7,11 @@ import java.util.List;
  */
 
 public class Recipe{
-    public int recipeId;
-    public String recipeName;
-    public int recipeServings;
-    public List<RecipeIngredient> recipeIngredients;
-    public List<RecipeStep> recipeSteps;
+    public final int recipeId;
+    public final String recipeName;
+    public final int recipeServings;
+    public final List<RecipeIngredient> recipeIngredients;
+    public final List<RecipeStep> recipeSteps;
 
     public Recipe(int recipeId, String recipeName, int recipeServings, List<RecipeIngredient> recipeIngredients, List<RecipeStep> recipeSteps) {
         this.recipeId = recipeId;

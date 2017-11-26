@@ -7,10 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.peterark.bakingapp.bakingapp.MasterRecipeListAdapter;
 import com.peterark.bakingapp.bakingapp.R;
-import com.peterark.bakingapp.bakingapp.RecipeItem;
-import com.peterark.bakingapp.bakingapp.databinding.ListItemMasterRecipeListBinding;
 import com.peterark.bakingapp.bakingapp.databinding.ListItemRecipeDetailStepBinding;
 import com.peterark.bakingapp.bakingapp.helperStructures.RecipeStep;
 
@@ -23,8 +20,8 @@ import java.util.List;
 public class RecipeDetailFragmentStepAdapter extends RecyclerView.Adapter<RecipeDetailFragmentStepAdapter.RecipeStepListViewHolder>{
 
 
-    public List<RecipeStep> mItemList;
-    public OnRecipeStepClickHandler mHandler;
+    private List<RecipeStep> mItemList;
+    private final OnRecipeStepClickHandler mHandler;
 
 
     public RecipeDetailFragmentStepAdapter(List<RecipeStep> itemList, RecipeDetailFragmentStepAdapter.OnRecipeStepClickHandler handler){
@@ -66,7 +63,7 @@ public class RecipeDetailFragmentStepAdapter extends RecyclerView.Adapter<Recipe
 
     public class RecipeStepListViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
 
-        ListItemRecipeDetailStepBinding mBinding;
+        final ListItemRecipeDetailStepBinding mBinding;
 
 
         private RecipeStepListViewHolder(ListItemRecipeDetailStepBinding binding){

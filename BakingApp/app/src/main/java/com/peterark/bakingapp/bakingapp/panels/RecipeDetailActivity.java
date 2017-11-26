@@ -6,7 +6,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.widget.Toast;
 
 import com.peterark.bakingapp.bakingapp.R;
 import com.peterark.bakingapp.bakingapp.panels.recipeDetail.RecipeDetailFragment;
@@ -18,7 +17,7 @@ import timber.log.Timber;
 
 public class RecipeDetailActivity extends AppCompatActivity implements RecipeDetailFragmentStepAdapter.OnRecipeStepClickHandler{
 
-    public static final String RECIPE_ID = "RECIPE_ID";
+    private static final String RECIPE_ID = "RECIPE_ID";
 
     // Intent variables
     private int recipeId;
@@ -33,7 +32,7 @@ public class RecipeDetailActivity extends AppCompatActivity implements RecipeDet
         context.startActivity(launchIntent(context, recipeId));
     }
 
-    public static Intent launchIntent(Context context, int recipeId) {
+    private static Intent launchIntent(Context context, int recipeId) {
         Class destinationActivity = RecipeDetailActivity.class;
         Intent intent = new Intent(context, destinationActivity);
 
@@ -51,10 +50,7 @@ public class RecipeDetailActivity extends AppCompatActivity implements RecipeDet
         Timber.d("RecipeDetailActivity ONCREATE...");
 
         // Check if the Panel is in two panel mode or not.
-        if( findViewById(R.id.recipe_step_detail_container) != null)
-            twoPane = true;
-        else
-            twoPane = false;
+        twoPane = findViewById(R.id.recipe_step_detail_container) != null;
 
         // Get the RecipeId from the Bundle.
         if(savedInstanceState==null) {

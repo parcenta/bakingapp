@@ -5,8 +5,6 @@ import android.database.sqlite.SQLiteDatabase;
 import com.peterark.bakingapp.bakingapp.database.contracts.RecipeContract;
 import com.peterark.bakingapp.bakingapp.database.contracts.RecipeIngredientContract;
 import com.peterark.bakingapp.bakingapp.database.contracts.RecipeStepContract;
-import com.peterark.bakingapp.bakingapp.helperStructures.RecipeIngredient;
-import com.peterark.bakingapp.bakingapp.helperStructures.RecipeStep;
 
 /**
  * Created by PETER on 1/11/2017.

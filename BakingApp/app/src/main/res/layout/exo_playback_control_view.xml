@@ -29,22 +29,27 @@
         android:orientation="horizontal">
 
         <ImageButton android:id="@id/exo_prev"
+            android:contentDescription="@string/player_previous"
             style="@style/ExoMediaButton.Previous"/>
 
         <ImageButton android:id="@id/exo_rew"
             style="@style/ExoMediaButton.Rewind"/>
 
         <ImageButton android:id="@id/exo_play"
-            style="@style/ExoMediaButton.Play"/>
+            style="@style/ExoMediaButton.Play"
+            android:contentDescription="@string/player_next"/>
 
         <ImageButton android:id="@id/exo_pause"
-            style="@style/ExoMediaButton.Pause"/>
+            style="@style/ExoMediaButton.Pause"
+            android:contentDescription="@string/player_pause"/>
 
         <ImageButton android:id="@id/exo_ffwd"
-            style="@style/ExoMediaButton.FastForward"/>
+            style="@style/ExoMediaButton.FastForward"
+            android:contentDescription="@string/player_fastforward"/>
 
         <ImageButton android:id="@id/exo_next"
-            style="@style/ExoMediaButton.Next"/>
+            style="@style/ExoMediaButton.Next"
+            android:contentDescription="@string/player_next"/>
 
     </LinearLayout>
 

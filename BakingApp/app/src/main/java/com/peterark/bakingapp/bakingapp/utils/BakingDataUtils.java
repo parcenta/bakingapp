@@ -3,7 +3,6 @@ package com.peterark.bakingapp.bakingapp.utils;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.util.Log;
 
 import com.peterark.bakingapp.bakingapp.BuildConfig;
 import com.peterark.bakingapp.bakingapp.database.contracts.RecipeContract;
@@ -12,17 +11,14 @@ import com.peterark.bakingapp.bakingapp.database.contracts.RecipeStepContract;
 import com.peterark.bakingapp.bakingapp.helperStructures.Recipe;
 import com.peterark.bakingapp.bakingapp.helperStructures.RecipeIngredient;
 import com.peterark.bakingapp.bakingapp.helperStructures.RecipeStep;
-import com.peterark.bakingapp.bakingapp.widget.BakingIntentService;
-import com.peterark.bakingapp.bakingapp.widget.BakingWidget;
+import com.peterark.bakingapp.bakingapp.widget.BakingWidgetProvider;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 
 import timber.log.Timber;
 
@@ -33,7 +29,7 @@ import timber.log.Timber;
 public class BakingDataUtils {
 
 
-    public static String syncRecipes(Context context) throws Exception{
+    public static String syncRecipes(Context context){
 
         try {
             URL requestUrl = NetworkUtils.buildUrl(NetworkUtils.LOAD_RECIPE_LIST);
@@ -99,7 +95,7 @@ public class BakingDataUtils {
         }
     }
 
-    public static List<Recipe> getBakingRecipeDataFromJson(String dataJson) throws Exception{
+    private static List<Recipe> getBakingRecipeDataFromJson(String dataJson) throws Exception{
 
         Timber.d("Received JSON: %s",dataJson);
 
@@ -164,7 +160,7 @@ public class BakingDataUtils {
     public static int getWidgetSelectedRecipeId(Context context){
         SharedPreferences prefs = context.getSharedPreferences("prefs",Context.MODE_PRIVATE);
         if (prefs!=null)
-            return prefs.getInt(BakingWidget.WIDGET_SELECTED_RECIPE_ID,0);
+            return prefs.getInt(BakingWidgetProvider.WIDGET_SELECTED_RECIPE_ID,0);
         else
             return 0;
     }
@@ -172,7 +168,7 @@ public class BakingDataUtils {
     public static void setWidgetSelectedRecipeId(Context context,int recipeId){
         SharedPreferences prefs = context.getSharedPreferences("prefs",Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = prefs.edit();
-        editor.putInt(BakingWidget.WIDGET_SELECTED_RECIPE_ID, recipeId);
-        editor.commit();
+        editor.putInt(BakingWidgetProvider.WIDGET_SELECTED_RECIPE_ID, recipeId);
+        editor.commit(); // Im using commit, because we need the saved variable in an after process.
     }
 }

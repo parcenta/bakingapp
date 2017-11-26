@@ -5,26 +5,21 @@ import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
 import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
-import android.os.Bundle;
 import android.view.View;
 import android.widget.RemoteViews;
 
 import com.peterark.bakingapp.bakingapp.R;
 import com.peterark.bakingapp.bakingapp.RecipeMainActivity;
-import com.peterark.bakingapp.bakingapp.database.contracts.RecipeContract;
-import com.peterark.bakingapp.bakingapp.panels.RecipeDetailActivity;
-import com.peterark.bakingapp.bakingapp.utils.BakingDataUtils;
 
 
 /**
  * Implementation of App Widget functionality.
  */
-public class BakingWidget extends AppWidgetProvider {
+public class BakingWidgetProvider extends AppWidgetProvider {
 
     public static final String WIDGET_SELECTED_RECIPE_ID = "WIDGET_SELECTED_RECIPE_ID";
 
-    static void updateAppWidget(Context context, AppWidgetManager appWidgetManager,int appWidgetId, int selectedRecipeId, String recipeName) {
+    private static void updateAppWidget(Context context, AppWidgetManager appWidgetManager,int appWidgetId, int selectedRecipeId, String recipeName) {
 
         // Construct the RemoteViews object
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.baking_widget);
