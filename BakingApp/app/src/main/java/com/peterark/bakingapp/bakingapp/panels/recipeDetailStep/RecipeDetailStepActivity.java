@@ -7,6 +7,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.view.MenuItem;
 
 import com.peterark.bakingapp.bakingapp.R;
 
@@ -39,6 +40,8 @@ public class RecipeDetailStepActivity extends AppCompatActivity implements Recip
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recipe_detail_step_activity);
 
+
+
         // Get the RecipeId from the Bundle.
         Intent receivedIntent = getIntent();
         mRecipeId = 0;
@@ -48,19 +51,32 @@ public class RecipeDetailStepActivity extends AppCompatActivity implements Recip
         if (receivedIntent.hasExtra(RecipeDetailStepFragment.RECIPE_STEP_ID))
             mRecipeStepId = receivedIntent.getIntExtra(RecipeDetailStepFragment.RECIPE_STEP_ID,0);
 
-        // Like this acitivty is called only on non-tablet devices. Then we just check if we are in landsacpe mode...
-        // to show the video in full screen.
+        // Get ActionBar
+        ActionBar ab = getSupportActionBar();
+
+        // Show back action in the AppBar.
+        if (ab!=null) ab.setDisplayHomeAsUpEnabled(true);
+
+        // Like this acitivty is called only on non-tablet devices. Then we just check if we are in landsacpe mode to show the video in full screen.
         boolean isInLandscapeMode  = getResources().getBoolean(R.bool.isInLandscapeMode);
-        if(isInLandscapeMode){
-            ActionBar ab = getSupportActionBar();
-            if (ab != null) ab.hide();
-        }
+        if(isInLandscapeMode && ab!=null) ab.hide();
 
         // Setting the fragments.
         if (savedInstanceState == null)
             createRecipeDetailStepFragment(mRecipeStepId);
 
     }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int itemId = item.getItemId();
+        if(itemId == android.R.id.home) {
+            onBackPressed();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
 
     @Override
     public void goToPreviousRecipe(int previousStepId) {

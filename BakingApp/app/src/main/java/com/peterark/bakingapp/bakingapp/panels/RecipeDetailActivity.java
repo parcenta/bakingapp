@@ -4,8 +4,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.MenuItem;
 
 import com.peterark.bakingapp.bakingapp.R;
 import com.peterark.bakingapp.bakingapp.panels.recipeDetail.RecipeDetailFragment;
@@ -49,6 +51,10 @@ public class RecipeDetailActivity extends AppCompatActivity implements RecipeDet
 
         Timber.d("RecipeDetailActivity ONCREATE...");
 
+        // Showing the Back Button in the AppBar.
+        ActionBar ab = getSupportActionBar();
+        if (ab!=null) ab.setDisplayHomeAsUpEnabled(true);
+
         // Check if the Panel is in two panel mode or not.
         twoPane = findViewById(R.id.recipe_step_detail_container) != null;
 
@@ -84,6 +90,16 @@ public class RecipeDetailActivity extends AppCompatActivity implements RecipeDet
             Timber.d("RecipeDetailActivity has VALID savedInstance, so we get the recipeId from the savedInstance...");
         }
 
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int itemId = item.getItemId();
+        if(itemId == android.R.id.home) {
+            onBackPressed();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
