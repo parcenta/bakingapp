@@ -15,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.peterark.bakingapp.bakingapp.MasterRecipeListFragment;
 import com.peterark.bakingapp.bakingapp.R;
 import com.peterark.bakingapp.bakingapp.database.contracts.RecipeContract;
 import com.peterark.bakingapp.bakingapp.database.contracts.RecipeIngredientContract;
@@ -125,6 +126,7 @@ public class RecipeDetailFragment extends Fragment implements LoaderManager.Load
             @Override
             protected void onStartLoading() {
                 super.onStartLoading();
+
                 if(cachedResponse != null)
                     deliverResult(cachedResponse);
                 else
@@ -239,7 +241,7 @@ public class RecipeDetailFragment extends Fragment implements LoaderManager.Load
             return;
         }
 
-        mBinding.recipeNameTextview.setText(response.recipeName);
+        mBinding.selectedRecipeNameTextview.setText(response.recipeName);
         mBinding.ingredientsTextarea.setText(response.ingredientsText);
         mAdapter.setItemList(response.stepList);
     }

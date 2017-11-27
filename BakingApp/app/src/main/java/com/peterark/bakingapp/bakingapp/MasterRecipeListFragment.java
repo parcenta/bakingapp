@@ -4,14 +4,15 @@ import android.content.Context;
 import android.database.Cursor;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.VisibleForTesting;
+import android.support.test.espresso.IdlingResource;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.AsyncTaskLoader;
 import android.support.v4.content.Loader;
 import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,15 +32,20 @@ import timber.log.Timber;
  */
 
 public class MasterRecipeListFragment extends Fragment implements LoaderManager.LoaderCallbacks<MasterRecipeListFragment.MasterRecipeListResponse>,
-                                                                        MasterRecipeListAdapter.OnRecipeClickHandler {
+                                                                        MasterRecipeListAdapter.OnRecipeClickHandler
+                                                                        {
 
 
-    FragmentMasterRecipeListBinding mBinding;
-    MasterRecipeListAdapter mAdapter;
+    private FragmentMasterRecipeListBinding mBinding;
+    private MasterRecipeListAdapter mAdapter;
 
-    MasterRecipeListResponse mTaskResponse;
+    private MasterRecipeListResponse mTaskResponse;
 
-    boolean isTablet;
+    private BakingRecipeListHandler mHandler;
+
+    public interface BakingRecipeListHandler{
+        void setIdlingResource(boolean isIdle);
+    }
 
     @Nullable
     @Override
@@ -48,7 +54,7 @@ public class MasterRecipeListFragment extends Fragment implements LoaderManager.
 
         // Check if its a tablet or not. (sw600dp)
         Context context = getActivity();
-        isTablet = context.getResources().getBoolean(R.bool.isTablet);
+        boolean isTablet = context.getResources().getBoolean(R.bool.isTablet);
 
         // Set the Adapter
         mAdapter = new MasterRecipeListAdapter(null,this);
@@ -69,12 +75,28 @@ public class MasterRecipeListFragment extends Fragment implements LoaderManager.
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         // Init Loader
+
         getLoaderManager().initLoader(0,null,this);
     }
 
+    // Override onAttach to make sure that the container activity has implemented the callback
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+
+        // This makes sure that the host activity has implemented the callback interface
+        // If not, it throws an exception
+        try {
+            mHandler = (BakingRecipeListHandler) context;
+        } catch (ClassCastException e) {
+            Timber.d("BakingRecipeListHandler is not set.");
+            e.printStackTrace();
+        }
+    }
+
     /* -----------------------------------------------------------------------------------------------------
-             * LOADER CALLBACKS METHODS
-             -------------------------------------------------------------------------------------------------------*/
+     * LOADER CALLBACKS METHODS
+     -------------------------------------------------------------------------------------------------------*/
     @Override
     public Loader<MasterRecipeListResponse> onCreateLoader(int id, Bundle args) {
         return new AsyncTaskLoader<MasterRecipeListResponse>(getActivity()) {
@@ -84,6 +106,9 @@ public class MasterRecipeListFragment extends Fragment implements LoaderManager.
             @Override
             protected void onStartLoading() {
                 super.onStartLoading();
+
+                // TESTING ONLY: Communicate to Activitty that is NOT in Idle Mode.
+                if(mHandler!=null) mHandler.setIdlingResource(false);
 
                 // If there is a cachedResponse, we deliver the result.
                 if(cachedResponse!=null) {
@@ -127,11 +152,14 @@ public class MasterRecipeListFragment extends Fragment implements LoaderManager.
 
                     // Now we load the saved baking recipes (if there is any).If syncing in the previous step failed, we load anyway if there are previously saved recipes in DB.
                     Cursor recipesCursor = context.getContentResolver().query(RecipeContract.RecipeEntry.CONTENT_URI,null,null,null,null);
-                    while(recipesCursor.moveToNext()){
-                        int recipeId        = recipesCursor.getInt(recipesCursor.getColumnIndex(RecipeContract.RecipeEntry.COLUMN_RECIPE_ID));
-                        String recipeName   = recipesCursor.getString(recipesCursor.getColumnIndex(RecipeContract.RecipeEntry.COLUMN_RECIPE_NAME));
-                        int servings        = recipesCursor.getInt(recipesCursor.getColumnIndex(RecipeContract.RecipeEntry.COLUMN_RECIPE_SERVINGS));
-                        recipeList.add(new RecipeItem(recipeId,recipeName,servings));
+                    if (recipesCursor!=null) {
+                        while (recipesCursor.moveToNext()) {
+                            int recipeId = recipesCursor.getInt(recipesCursor.getColumnIndex(RecipeContract.RecipeEntry.COLUMN_RECIPE_ID));
+                            String recipeName = recipesCursor.getString(recipesCursor.getColumnIndex(RecipeContract.RecipeEntry.COLUMN_RECIPE_NAME));
+                            int servings = recipesCursor.getInt(recipesCursor.getColumnIndex(RecipeContract.RecipeEntry.COLUMN_RECIPE_SERVINGS));
+                            recipeList.add(new RecipeItem(recipeId, recipeName, servings));
+                        }
+                        if(!recipesCursor.isClosed()) recipesCursor.close();
                     }
 
                     return new MasterRecipeListResponse(errorMessage,recipeList);
@@ -178,6 +206,8 @@ public class MasterRecipeListFragment extends Fragment implements LoaderManager.
         else //
             mBinding.recipeListRecyclerView.setVisibility(View.VISIBLE);
 
+        // TESTING: Communicate to activity that now its on Idle Mode.
+        if(mHandler!=null) mHandler.setIdlingResource(true);
     }
 
     @Override
@@ -197,10 +227,10 @@ public class MasterRecipeListFragment extends Fragment implements LoaderManager.
 
     }
 
-    public class MasterRecipeListResponse {
-        public String errorMessage;
-        public List<RecipeItem> recipeList;
-        public MasterRecipeListResponse(String errorMessage, List<RecipeItem> recipeList){
+    class MasterRecipeListResponse {
+        final String errorMessage;
+        final List<RecipeItem> recipeList;
+        MasterRecipeListResponse(String errorMessage, List<RecipeItem> recipeList){
             this.errorMessage   = errorMessage;
             this.recipeList     = recipeList;
         }

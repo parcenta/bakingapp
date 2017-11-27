@@ -2,6 +2,10 @@ package com.peterark.bakingapp.bakingapp.panels;
 
 import android.content.Context;
 import android.content.Intent;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.annotation.VisibleForTesting;
+import android.support.test.espresso.IdlingResource;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
@@ -12,10 +16,11 @@ import com.peterark.bakingapp.bakingapp.panels.recipeDetail.RecipeDetailFragment
 import com.peterark.bakingapp.bakingapp.panels.recipeDetail.RecipeDetailFragmentStepAdapter;
 import com.peterark.bakingapp.bakingapp.panels.recipeDetailStep.RecipeDetailStepActivity;
 import com.peterark.bakingapp.bakingapp.panels.recipeDetailStep.RecipeDetailStepFragment;
+import com.peterark.bakingapp.bakingapp.testing.BakingRecipeLoadIdlingResource;
 
 import timber.log.Timber;
 
-public class RecipeDetailActivity extends AppCompatActivity implements RecipeDetailFragmentStepAdapter.OnRecipeStepClickHandler{
+public class RecipeDetailActivity extends AppCompatActivity implements RecipeDetailFragmentStepAdapter.OnRecipeStepClickHandler {
 
     private static final String RECIPE_ID = "RECIPE_ID";
 
@@ -24,6 +29,10 @@ public class RecipeDetailActivity extends AppCompatActivity implements RecipeDet
 
     // Responsive Phone/Tablet helper variables
     private boolean twoPane;
+
+    // For Testing
+    @Nullable
+    private BakingRecipeLoadIdlingResource mIdlingResource;
 
     /* -----------------------------------------------------------------
      * Launch Helper
@@ -104,4 +113,5 @@ public class RecipeDetailActivity extends AppCompatActivity implements RecipeDet
         outState.putInt(RECIPE_ID,recipeId);
         super.onSaveInstanceState(outState);
     }
+
 }
