@@ -52,6 +52,18 @@ public class BakingWidgetProvider extends AppWidgetProvider {
             views.setOnClickPendingIntent(R.id.widget_no_recipe_selected_textview,recipeListPendingIntent);
         }
 
+        // Set the Go To Previous Recipe button action.
+        Intent recipeGoToPreviousRecipeIntent = new Intent(context,BakingIntentService.class);
+        recipeGoToPreviousRecipeIntent.setAction(BakingIntentService.ACTION_WIDGET_SHOW_PREVIOUS_RECIPE_INGREDIENTS);
+        PendingIntent recipePreviousRecipeIntent = PendingIntent.getService(context,0,recipeGoToPreviousRecipeIntent,PendingIntent.FLAG_CANCEL_CURRENT);
+        views.setOnClickPendingIntent(R.id.widget_go_to_previous_recipe,recipePreviousRecipeIntent);
+
+        // Set the Go To Next Recipe button action.
+        Intent recipeGoToNextRecipeIntent = new Intent(context,BakingIntentService.class);
+        recipeGoToNextRecipeIntent.setAction(BakingIntentService.ACTION_WIDGET_SHOW_NEXT_RECIPE_INGREDIENTS);
+        PendingIntent recipeNextRecipeIntent = PendingIntent.getService(context,0,recipeGoToNextRecipeIntent,PendingIntent.FLAG_CANCEL_CURRENT);
+        views.setOnClickPendingIntent(R.id.widget_go_to_next_recipe,recipeNextRecipeIntent);
+
         // Instruct the widget manager to update the widget
         appWidgetManager.updateAppWidget(appWidgetId, views);
     }

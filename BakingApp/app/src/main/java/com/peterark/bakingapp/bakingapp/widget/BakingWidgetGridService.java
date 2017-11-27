@@ -12,9 +12,6 @@ import com.peterark.bakingapp.bakingapp.utils.BakingDataUtils;
 
 import timber.log.Timber;
 
-/**
- * Created by PETER on 14/11/2017.
- */
 
 public class BakingWidgetGridService extends RemoteViewsService {
     @Override

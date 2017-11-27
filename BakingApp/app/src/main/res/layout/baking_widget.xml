@@ -15,25 +15,57 @@
         android:background="@color/image_placeholder_background"
         android:padding="10dp"
         android:gravity="center_vertical"
+        android:baselineAligned="false"
         android:elevation="2dp">
-        <ImageView
-            android:layout_width="35dp"
-            android:layout_height="35dp"
-            android:src="@drawable/ic_cake_white"
-            android:contentDescription="@string/default_content_description"/>
-        <TextView
-            android:id="@+id/widget_recipe_name_text_view"
+        <LinearLayout
+            android:id="@+id/widget_go_to_previous_recipe"
+            android:layout_width="40dp"
+            android:layout_height="match_parent"
+            android:gravity="center">
+            <ImageView
+                android:layout_width="40dp"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_material_left_arrow_white"
+                android:contentDescription="@string/player_previous"
+                />
+        </LinearLayout>
+        <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:textColor="@color/white_primary"
-            android:layout_marginLeft="8dp"
-            android:layout_marginStart="8dp"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            android:maxLines="1"
-            android:ellipsize="end"
-            tools:text="Cake Chocolate"/>
+            android:gravity="center">
+            <ImageView
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:src="@drawable/ic_cake_white"
+                android:contentDescription="@string/default_content_description"/>
+            <TextView
+                android:id="@+id/widget_recipe_name_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/white_primary"
+                android:layout_marginLeft="8dp"
+                android:layout_marginStart="8dp"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:maxLines="1"
+                android:ellipsize="end"
+                tools:text="Cake Chocolate of super ingrediente"/>
+        </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/widget_go_to_next_recipe"
+                android:layout_width="40dp"
+                android:layout_height="match_parent"
+                android:gravity="center">
+                <ImageView
+                    android:layout_width="40dp"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_material_right_arrow_white"
+                    android:contentDescription="@string/player_next"
+                    />
+            </LinearLayout>
+
     </LinearLayout>
 
     <LinearLayout

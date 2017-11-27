@@ -30,14 +30,16 @@
 
         <ImageButton android:id="@id/exo_prev"
             android:contentDescription="@string/player_previous"
-            style="@style/ExoMediaButton.Previous"/>
+            style="@style/ExoMediaButton.Previous"
+            android:visibility="gone"/>
 
         <ImageButton android:id="@id/exo_rew"
-            style="@style/ExoMediaButton.Rewind"/>
+            style="@style/ExoMediaButton.Rewind"
+            android:contentDescription="@string/player_rewind"/>
 
         <ImageButton android:id="@id/exo_play"
             style="@style/ExoMediaButton.Play"
-            android:contentDescription="@string/player_next"/>
+            android:contentDescription="@string/player_play"/>
 
         <ImageButton android:id="@id/exo_pause"
             style="@style/ExoMediaButton.Pause"
@@ -49,7 +51,8 @@
 
         <ImageButton android:id="@id/exo_next"
             style="@style/ExoMediaButton.Next"
-            android:contentDescription="@string/player_next"/>
+            android:contentDescription="@string/player_next"
+            android:visibility="gone"/>
 
     </LinearLayout>
 

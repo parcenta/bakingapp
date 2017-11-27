@@ -15,7 +15,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-import com.peterark.bakingapp.bakingapp.MasterRecipeListFragment;
 import com.peterark.bakingapp.bakingapp.R;
 import com.peterark.bakingapp.bakingapp.database.contracts.RecipeContract;
 import com.peterark.bakingapp.bakingapp.database.contracts.RecipeIngredientContract;

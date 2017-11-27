@@ -22,10 +22,6 @@ import java.util.List;
 
 import timber.log.Timber;
 
-/**
- * Created by PETER on 30/10/2017.
- */
-
 public class BakingDataUtils {
 
 
@@ -40,7 +36,7 @@ public class BakingDataUtils {
             if(response==null)
                 return "No connection available.";
 
-            Timber.d("JsonString Response: " + response);
+            //Timber.d("JsonString Response: " + response);
 
             // Convert the JSON to a Recipe class object.
             List<Recipe> recipeList = BakingDataUtils.getBakingRecipeDataFromJson(response);
@@ -96,8 +92,6 @@ public class BakingDataUtils {
     }
 
     private static List<Recipe> getBakingRecipeDataFromJson(String dataJson) throws Exception{
-
-        Timber.d("Received JSON: %s",dataJson);
 
         // Init recipe list.
         List<Recipe> recipeList = new ArrayList<>();

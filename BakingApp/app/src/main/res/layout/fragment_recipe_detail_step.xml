@@ -41,39 +41,33 @@
             android:layout_weight="0.6"
             android:orientation="vertical"
             >
-
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical">
-                <LinearLayout
+                android:gravity="center_vertical"
+                android:padding="16dp">
+                <TextView
+                    android:id="@+id/recipe_step_number_textview"
+                    style="@style/BakingApp.TextView.Caption.Bubble"
+                    tools:text="1"/>
+                <TextView
+                    android:id="@+id/recipe_short_description_textview"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:padding="16dp">
-                    <TextView
-                        android:id="@+id/recipe_step_number_textview"
-                        style="@style/BakingApp.TextView.Caption.Bubble"
-                        tools:text="1"/>
-                    <TextView
-                        android:id="@+id/recipe_short_description_textview"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:textSize="18sp"
-                        android:fontFamily="sans-serif-light"
-                        android:layout_marginLeft="8dp"
-                        android:layout_marginStart="8dp"
-                        tools:text="This is the short description"/>
-                </LinearLayout>
-
-                <TextView
-                    android:id="@+id/recipe_large_description_textview"
-                    style="@style/BakingApp.TextView.Caption"
-                    android:layout_width="match_parent"
-                    android:paddingLeft="16dp"
-                    android:paddingRight="16dp"
-                    tools:text="This is the large description of the application"/>
+                    android:textSize="18sp"
+                    android:fontFamily="sans-serif-light"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginStart="8dp"
+                    tools:text="This is the short description"/>
             </LinearLayout>
+
+            <TextView
+                android:id="@+id/recipe_large_description_textview"
+                style="@style/BakingApp.TextView.Caption"
+                android:layout_width="match_parent"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp"
+                tools:text="This is the large description of the application"/>
         </LinearLayout>
 
         <!-- Pagination Container -->
