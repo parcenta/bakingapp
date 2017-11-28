@@ -1,32 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="16dp"
-        android:gravity="center_vertical">
+        android:orientation="horizontal">
         <LinearLayout
-            android:layout_width="45dp"
-            android:layout_height="wrap_content">
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:padding="16dp"
+            android:gravity="center_vertical">
+            <LinearLayout
+                android:layout_width="45dp"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:id="@+id/step_number_textview"
+                    style="@style/BakingApp.TextView.Caption.Bubble"
+                    tools:text="12"
+                    />
+            </LinearLayout>
             <TextView
-                android:id="@+id/step_number_textview"
-                style="@style/BakingApp.TextView.Caption.Bubble"
-                tools:text="12"
-                />
+                android:id="@+id/step_short_description_textview"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                tools:text="First yoe need to setup the food in the table because of the bla bla."/>
         </LinearLayout>
-        <TextView
-            android:id="@+id/step_short_description_textview"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="0.9"
-            tools:text="First yoe need to setup the food in the table because of the bla bla."/>
+        <View
+            android:layout_width="0.5dp"
+            android:layout_height="match_parent"
+            android:layout_marginTop="6dp"
+            android:layout_marginBottom="6dp"
+            android:background="@color/list_line_separator"/>
         <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="0.1"
-            android:gravity="end|center_vertical">
+            android:id="@+id/go_to_selected_recipe_step"
+            android:layout_width="56dp"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            >
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

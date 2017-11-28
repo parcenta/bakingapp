@@ -69,7 +69,7 @@ public class RecipeDetailFragmentStepAdapter extends RecyclerView.Adapter<Recipe
         private RecipeStepListViewHolder(ListItemRecipeDetailStepBinding binding){
             super(binding.getRoot());
             mBinding = binding;
-            mBinding.getRoot().setOnClickListener(this);
+            mBinding.goToSelectedRecipeStep.setOnClickListener(this);
         }
         @Override
         public void onClick(View v) {
