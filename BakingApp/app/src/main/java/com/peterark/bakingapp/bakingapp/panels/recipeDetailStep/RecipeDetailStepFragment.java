@@ -14,6 +14,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.DefaultLoadControl;
 import com.google.android.exoplayer2.ExoPlayerFactory;
 import com.google.android.exoplayer2.LoadControl;
@@ -50,6 +51,8 @@ public class RecipeDetailStepFragment extends Fragment implements LoaderManager.
     private FragmentRecipeDetailStepBinding mBinding;
 
     private SimpleExoPlayer mExoPlayer;
+    private long mCurrentExoPlayerPosition;
+    public static final String CURRENT_PLAYER_POSITION = "CURRENT_PLAYER_POSITION";
 
     private TaskResponse mTaskResponse;
 
@@ -110,6 +113,12 @@ public class RecipeDetailStepFragment extends Fragment implements LoaderManager.
             if (bundle.containsKey(RECIPE_STEP_ID)) mRecipeStepId = bundle.getInt(RECIPE_STEP_ID);
         }
 
+        // Get any saved ExoPlayer position. If there is any one.
+        mCurrentExoPlayerPosition = C.TIME_UNSET;
+        if (savedInstanceState != null) {
+            if(savedInstanceState.containsKey(CURRENT_PLAYER_POSITION)) mCurrentExoPlayerPosition = savedInstanceState.getLong(CURRENT_PLAYER_POSITION, C.TIME_UNSET);
+        }
+
         // Get some device current configuration values.
         Context context = getActivity();
         isTablet            = context.getResources().getBoolean(R.bool.isTablet);
@@ -137,8 +146,8 @@ public class RecipeDetailStepFragment extends Fragment implements LoaderManager.
     }
 
     @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
+    public void onResume() {
+        super.onResume();
         getLoaderManager().initLoader(0,null,this);
     }
 
@@ -317,23 +326,34 @@ public class RecipeDetailStepFragment extends Fragment implements LoaderManager.
             String userAgent = Util.getUserAgent(context, "BakingApp");
             MediaSource mediaSource = new ExtractorMediaSource(mediaUri, new DefaultDataSourceFactory(
                     context, userAgent), new DefaultExtractorsFactory(), null, null);
+
+            // Recovering last position of the video player. Source: https://stackoverflow.com/questions/45481775/exoplayer-restore-state-when-resumed/45482017#45482017
+            if (mCurrentExoPlayerPosition!=C.TIME_UNSET) mExoPlayer.seekTo(mCurrentExoPlayerPosition);
             mExoPlayer.prepare(mediaSource);
             mExoPlayer.setPlayWhenReady(true);
         }
     }
 
     @Override
-    public void onDestroy() {
-        super.onDestroy();
+    public void onPause() {
+        super.onPause();
         releasePlayer();
     }
 
     private void releasePlayer() {
         if (mExoPlayer != null) {
+            mCurrentExoPlayerPosition = mExoPlayer.getCurrentPosition(); // Saving the Current position
             mExoPlayer.stop();
             mExoPlayer.release();
             mExoPlayer = null;
         }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        if(mCurrentExoPlayerPosition!=C.TIME_UNSET) outState.putLong(CURRENT_PLAYER_POSITION,mCurrentExoPlayerPosition);
+
     }
 
     class TaskResponse{
