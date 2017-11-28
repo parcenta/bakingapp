@@ -54,6 +54,7 @@ public class BakingDataUtils {
                 cv.put(RecipeContract.RecipeEntry.COLUMN_RECIPE_ID,oneRecipe.recipeId);
                 cv.put(RecipeContract.RecipeEntry.COLUMN_RECIPE_NAME,oneRecipe.recipeName);
                 cv.put(RecipeContract.RecipeEntry.COLUMN_RECIPE_SERVINGS,oneRecipe.recipeServings);
+                cv.put(RecipeContract.RecipeEntry.COLUMN_RECIPE_IMAGE_URL,oneRecipe.recipeImageUrl);
                 context.getContentResolver().insert(RecipeContract.RecipeEntry.CONTENT_URI,cv);
 
                 // Insert the Ingredients
@@ -109,6 +110,7 @@ public class BakingDataUtils {
             int recipeId            = oneRecipeJsonObject.getInt("id");
             String recipeName       = oneRecipeJsonObject.getString("name");
             int recipeServings      = oneRecipeJsonObject.getInt("servings");
+            String imageUrl         = oneRecipeJsonObject.getString("image");
 
             // Get the Ingredients.
             List<RecipeIngredient> ingredientsList = new ArrayList<>();
@@ -142,6 +144,7 @@ public class BakingDataUtils {
             recipeList.add(new Recipe(recipeId,
                                         recipeName,
                                         recipeServings,
+                                        imageUrl,
                                         ingredientsList,
                                         stepsList));
 

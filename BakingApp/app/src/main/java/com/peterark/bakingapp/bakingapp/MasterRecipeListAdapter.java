@@ -8,6 +8,8 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.peterark.bakingapp.bakingapp.databinding.ListItemMasterRecipeListBinding;
+import com.peterark.bakingapp.bakingapp.utils.BakingDataUtils;
+import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
@@ -17,14 +19,15 @@ import java.util.List;
 
 public class MasterRecipeListAdapter extends RecyclerView.Adapter<MasterRecipeListAdapter.RecipeListViewHolder>{
 
-
+    private Context mContext;
     private List<RecipeItem> mItemList;
     private final OnRecipeClickHandler mHandler;
 
 
-    public MasterRecipeListAdapter(List<RecipeItem> itemList, OnRecipeClickHandler handler){
-        this.mItemList = itemList;
-        this.mHandler  = handler;
+    public MasterRecipeListAdapter(Context context, List<RecipeItem> itemList, OnRecipeClickHandler handler){
+        this.mContext   = context;
+        this.mItemList  = itemList;
+        this.mHandler   = handler;
     }
 
     public void setItemList(List<RecipeItem> itemList){
@@ -48,6 +51,20 @@ public class MasterRecipeListAdapter extends RecyclerView.Adapter<MasterRecipeLi
 
         holder.mBinding.recipeNameTextview.setText(item.recipeName);
         holder.mBinding.recipeServingsTextview.setText(String.valueOf(item.recipeServings));
+
+        // Loading the recipe image (if it has one). If not, then show only a placeholder image (with padding).
+        if (item.recipeImageUrl.length() > 0 && BakingDataUtils.isAValidImageUrl(item.recipeImageUrl)) {
+            holder.mBinding.emptyImagePlaceholder.setVisibility(View.GONE);
+            holder.mBinding.recipeImageView.setVisibility(View.VISIBLE);
+            Picasso.with(mContext)
+                    .load(item.recipeImageUrl)                    // Loading ImageUrl
+                    .error(R.drawable.ic_material_error_gray)      // Error Image (if loading fails)
+                    .into(holder.mBinding.recipeImageView);
+        }else{
+            holder.mBinding.recipeImageView.setVisibility(View.GONE);
+            holder.mBinding.emptyImagePlaceholder.setVisibility(View.VISIBLE);
+        }
+
     }
 
     @Override

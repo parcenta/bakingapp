@@ -23,6 +23,7 @@ public class RecipeDbUtils {
                         RecipeContract.RecipeEntry.COLUMN_RECIPE_ID         + " INTEGER NOT NULL, " +
                         RecipeContract.RecipeEntry.COLUMN_RECIPE_NAME       + " TEXT NOT NULL," +
                         RecipeContract.RecipeEntry.COLUMN_RECIPE_SERVINGS   + " INTEGER NOT NULL," +
+                        RecipeContract.RecipeEntry.COLUMN_RECIPE_IMAGE_URL  + " TEXT NOT NULL, " +
                         "CONSTRAINT constraint_"+RecipeContract.RecipeEntry.COLUMN_RECIPE_ID+" UNIQUE ("+RecipeContract.RecipeEntry.COLUMN_RECIPE_ID+"));";
                 break;
             case RecipeIngredientContract.RecipeIngredientEntry.TABLE_NAME:

@@ -54,7 +54,7 @@ public class MasterRecipeListFragment extends Fragment implements LoaderManager.
         boolean isTablet = context.getResources().getBoolean(R.bool.isTablet);
 
         // Set the Adapter
-        mAdapter = new MasterRecipeListAdapter(null,this);
+        mAdapter = new MasterRecipeListAdapter(getActivity(),null,this);
         GridLayoutManager layoutManager = new GridLayoutManager(getActivity(),isTablet ? 3 : 1);
         mBinding.recipeListRecyclerView.setLayoutManager(layoutManager);
         mBinding.recipeListRecyclerView.setAdapter(mAdapter);
@@ -151,10 +151,11 @@ public class MasterRecipeListFragment extends Fragment implements LoaderManager.
                     Cursor recipesCursor = context.getContentResolver().query(RecipeContract.RecipeEntry.CONTENT_URI,null,null,null,null);
                     if (recipesCursor!=null) {
                         while (recipesCursor.moveToNext()) {
-                            int recipeId = recipesCursor.getInt(recipesCursor.getColumnIndex(RecipeContract.RecipeEntry.COLUMN_RECIPE_ID));
-                            String recipeName = recipesCursor.getString(recipesCursor.getColumnIndex(RecipeContract.RecipeEntry.COLUMN_RECIPE_NAME));
-                            int servings = recipesCursor.getInt(recipesCursor.getColumnIndex(RecipeContract.RecipeEntry.COLUMN_RECIPE_SERVINGS));
-                            recipeList.add(new RecipeItem(recipeId, recipeName, servings));
+                            int recipeId        = recipesCursor.getInt(recipesCursor.getColumnIndex(RecipeContract.RecipeEntry.COLUMN_RECIPE_ID));
+                            String recipeName   = recipesCursor.getString(recipesCursor.getColumnIndex(RecipeContract.RecipeEntry.COLUMN_RECIPE_NAME));
+                            int servings        = recipesCursor.getInt(recipesCursor.getColumnIndex(RecipeContract.RecipeEntry.COLUMN_RECIPE_SERVINGS));
+                            String imageUrl     = recipesCursor.getString(recipesCursor.getColumnIndex(RecipeContract.RecipeEntry.COLUMN_RECIPE_IMAGE_URL));
+                            recipeList.add(new RecipeItem(recipeId, recipeName, servings,imageUrl));
                         }
                         if(!recipesCursor.isClosed()) recipesCursor.close();
                     }

@@ -8,6 +8,8 @@ import com.peterark.bakingapp.bakingapp.database.contracts.RecipeContract;
 import com.peterark.bakingapp.bakingapp.database.contracts.RecipeIngredientContract;
 import com.peterark.bakingapp.bakingapp.database.contracts.RecipeStepContract;
 
+import timber.log.Timber;
+
 /**
  * Created by PETER on 1/11/2017.
  */
@@ -15,7 +17,7 @@ import com.peterark.bakingapp.bakingapp.database.contracts.RecipeStepContract;
 public class RecipeDBHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "recipesdb.db";
-    private static final int VERSION = 1;
+    private static final int VERSION = 2;
 
     public RecipeDBHelper(Context context) {
         super(context, DATABASE_NAME, null, VERSION);
@@ -37,7 +39,11 @@ public class RecipeDBHelper extends SQLiteOpenHelper {
      */
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        Timber.d("Executing onUpgrade...");
 
+        // Upgrading the Recipe table. It has a new field called RecipeImageUrl
+        db.execSQL("DROP TABLE IF EXISTS " + RecipeContract.RecipeEntry.TABLE_NAME);
+        RecipeDbUtils.createTable(db, RecipeContract.RecipeEntry.TABLE_NAME);
     }
 
 }
