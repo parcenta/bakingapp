@@ -165,4 +165,12 @@ public class BakingDataUtils {
         editor.putInt(BakingWidgetProvider.WIDGET_SELECTED_RECIPE_ID, recipeId);
         editor.commit(); // Im using commit, because we need the saved variable in an after process.
     }
+
+    public static boolean isAValidVideoUrl(String mediaUrl){
+        return mediaUrl.endsWith(".mp4");
+    }
+
+    public static boolean isAValidImageUrl(String mediaUrl){
+        return mediaUrl.endsWith(".jpg") || mediaUrl.endsWith(".png");
+    }
 }

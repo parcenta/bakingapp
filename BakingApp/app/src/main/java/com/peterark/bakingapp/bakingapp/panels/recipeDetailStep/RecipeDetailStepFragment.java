@@ -28,6 +28,9 @@ import com.google.android.exoplayer2.util.Util;
 import com.peterark.bakingapp.bakingapp.R;
 import com.peterark.bakingapp.bakingapp.database.contracts.RecipeStepContract;
 import com.peterark.bakingapp.bakingapp.databinding.FragmentRecipeDetailStepBinding;
+import com.peterark.bakingapp.bakingapp.utils.BakingDataUtils;
+import com.squareup.picasso.Picasso;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -257,13 +260,34 @@ public class RecipeDetailStepFragment extends Fragment implements LoaderManager.
         mBinding.recipeShortDescriptionTextview.setText(response.stepShortDescription);
         mBinding.recipeLargeDescriptionTextview.setText(response.stepDescription);
 
-        // Check if there is valid video url.
-        if (response.videoUrl.length()>0 || response.thumbnailUrl.length() > 0){
+
+        // Check if there is valid video url. Im giving priority to the video over an image. If a recipe have both a video url and a thumbnail url
+        // then I just show the video (and hide the image)
+        if (response.videoUrl.length()>0 && BakingDataUtils.isAValidVideoUrl(response.videoUrl)){
+            // Hiding all the other items
             mBinding.noMediaAvailableTextview.setVisibility(View.GONE);
+            mBinding.recipeImageView.setVisibility(View.GONE);
+
+            // Show and initialize the video player.
             mBinding.recipeVideoPlayerview.setVisibility(View.VISIBLE);
             initializePlayer(Uri.parse(response.videoUrl.length()>0 ? response.videoUrl : response.thumbnailUrl));
-        }else {
+
+        } // If there is a valid Thumbnail url.
+        else if(response.thumbnailUrl.length() > 0 && BakingDataUtils.isAValidImageUrl(response.thumbnailUrl)){
             mBinding.recipeVideoPlayerview.setVisibility(View.GONE);
+            mBinding.noMediaAvailableTextview.setVisibility(View.GONE);
+
+            // Load the image using Picasso. This library also handles If the image cant be loaded, so its perfect for our scenario.
+            mBinding.recipeImageView.setVisibility(View.VISIBLE);
+            Picasso.with(getActivity())
+                    .load(response.thumbnailUrl)                    // Loading ImageUrl
+                    .placeholder(R.drawable.ic_cake_white)          // PlaceHolder Image (until loading finishes)
+                    .error(R.drawable.ic_material_error_gray)      // Error Image (if loading fails)
+                    .into(mBinding.recipeImageView);
+        }
+        else { // If there is no video and no thumbnail url. Then I just show a "No Media" message.
+            mBinding.recipeVideoPlayerview.setVisibility(View.GONE);
+            mBinding.recipeImageView.setVisibility(View.GONE);
             mBinding.noMediaAvailableTextview.setVisibility(View.VISIBLE);
         }
 
