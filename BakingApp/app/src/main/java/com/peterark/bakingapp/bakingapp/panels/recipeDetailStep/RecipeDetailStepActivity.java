@@ -8,6 +8,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
+import android.view.View;
 
 import com.peterark.bakingapp.bakingapp.R;
 
@@ -59,7 +60,14 @@ public class RecipeDetailStepActivity extends AppCompatActivity implements Recip
 
         // Like this acitivty is called only on non-tablet devices. Then we just check if we are in landsacpe mode to show the video in full screen.
         boolean isInLandscapeMode  = getResources().getBoolean(R.bool.isInLandscapeMode);
-        if(isInLandscapeMode && ab!=null) ab.hide();
+        if(isInLandscapeMode) {
+            // Hiding the Notification Bar. Source: https://developer.android.com/training/system-ui/status.html
+            View decorView = getWindow().getDecorView();
+            if(decorView!=null) decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN);
+
+            // Hiding the Action Bar in Landscape Mode.
+            if (ab!= null) ab.hide();
+        }
 
         // Setting the fragments.
         if (savedInstanceState == null)

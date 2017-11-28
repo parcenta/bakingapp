@@ -30,6 +30,7 @@
                 android:scaleType="fitCenter"
                 android:adjustViewBounds="true"
                 android:visibility="gone"
+                android:contentDescription="@string/default_content_description"
                 tools:src="@drawable/example_appwidget_preview"
                 />
 

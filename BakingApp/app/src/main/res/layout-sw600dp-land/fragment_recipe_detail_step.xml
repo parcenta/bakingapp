@@ -23,6 +23,18 @@
                 android:visibility="gone"
                 />
 
+            <ImageView
+                android:id="@+id/recipe_image_view"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:scaleType="fitCenter"
+                android:adjustViewBounds="true"
+                android:visibility="gone"
+                tools:src="@drawable/example_appwidget_preview"
+                android:contentDescription="@string/default_content_description"
+                />
+
+
             <TextView
                 android:id="@+id/no_media_available_textview"
                 android:layout_width="match_parent"
