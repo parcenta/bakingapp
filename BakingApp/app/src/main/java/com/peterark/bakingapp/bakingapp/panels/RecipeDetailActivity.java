@@ -17,7 +17,7 @@ import com.peterark.bakingapp.bakingapp.panels.recipeDetailStep.RecipeDetailStep
 
 import timber.log.Timber;
 
-public class RecipeDetailActivity extends AppCompatActivity implements RecipeDetailFragmentStepAdapter.OnRecipeStepClickHandler {
+public class RecipeDetailActivity extends AppCompatActivity implements RecipeDetailFragment.RecipeDetailHandler,RecipeDetailFragmentStepAdapter.OnRecipeStepClickHandler {
 
     private static final String RECIPE_ID = "RECIPE_ID";
 
@@ -100,6 +100,19 @@ public class RecipeDetailActivity extends AppCompatActivity implements RecipeDet
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    // Method that will display
+    @Override
+    public void displayFirstRecipeStepInTwoPane(int firstRecipeStepId) {
+        if(twoPane){
+            // Create RecipeDetail Fragment
+            Fragment recipeDetailStepFragment = RecipeDetailStepFragment.newInstance(recipeId,firstRecipeStepId);
+
+            // Setting the RecipeDetail fragment in the view.
+            FragmentManager fm = getSupportFragmentManager();
+            fm.beginTransaction().replace(R.id.recipe_step_detail_container,recipeDetailStepFragment).commit();
+        }
     }
 
     @Override

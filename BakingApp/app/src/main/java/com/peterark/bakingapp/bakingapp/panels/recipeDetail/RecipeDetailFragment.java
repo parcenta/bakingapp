@@ -36,6 +36,8 @@ import timber.log.Timber;
 public class RecipeDetailFragment extends Fragment implements LoaderManager.LoaderCallbacks<RecipeDetailFragment.RecipeDetailFragmentLoaderResponse>,
                                                                 RecipeDetailFragmentStepAdapter.OnRecipeStepClickHandler{
 
+    private static final String SELECTED_RECIPE_DETAIL_STEP_ID = "SELECTED_RECIPE_DETAIL_STEP_ID";
+
     private static final int RECIPE_DETAIL_LOADER_ID = 1001;
 
     // Bundle variables
@@ -47,13 +49,21 @@ public class RecipeDetailFragment extends Fragment implements LoaderManager.Load
 
     private RecipeDetailFragmentStepAdapter mAdapter;
 
-    private RecipeDetailFragmentStepAdapter.OnRecipeStepClickHandler mHandler;
+    private RecipeDetailFragmentStepAdapter.OnRecipeStepClickHandler mOnClickHandler;
 
     private RecipeDetailFragmentLoaderResponse mResponse;
+
+    private RecipeDetailHandler mRecipeDetailHandler;
+
+    private int mSelectedRecipeStepId;
 
     // Constructor
     public RecipeDetailFragment(){
         Timber.d("RecipeDetailFragment is created.");
+    }
+
+    public interface RecipeDetailHandler{
+        void displayFirstRecipeStepInTwoPane(int firstRecipeStepId);
     }
 
     // Fragment "Instance constructor".
@@ -85,6 +95,12 @@ public class RecipeDetailFragment extends Fragment implements LoaderManager.Load
         // Get the RecipeId
         mRecipeId = getRecipeId();
 
+        // Initialize selected recipe id with a negative value.
+        mSelectedRecipeStepId = -1;
+        if(savedInstanceState!=null){
+            if(savedInstanceState.containsKey(SELECTED_RECIPE_DETAIL_STEP_ID)) mSelectedRecipeStepId = savedInstanceState.getInt(SELECTED_RECIPE_DETAIL_STEP_ID);
+        }
+
         // Set the Adapter
         mAdapter = new RecipeDetailFragmentStepAdapter(null,this);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
@@ -99,6 +115,14 @@ public class RecipeDetailFragment extends Fragment implements LoaderManager.Load
         super.onActivityCreated(savedInstanceState);
         // Init Loader
         getLoaderManager().initLoader(RECIPE_DETAIL_LOADER_ID,null,this);
+
+        // If there hasnt been selected a RecipeDetailStep and its a TwoPane, then we show the first detail step.
+        if(mSelectedRecipeStepId == -1 && getActivity().findViewById(R.id.recipe_step_detail_container) != null){
+            Timber.d("Showing the First Recipe Step Fragment (Two Pane Mode)");
+            int firstRecipeStepId = 0;
+            mRecipeDetailHandler.displayFirstRecipeStepInTwoPane(firstRecipeStepId);
+            mSelectedRecipeStepId = firstRecipeStepId;
+        }
     }
 
     // Override onAttach to make sure that the container activity has implemented the callback
@@ -109,10 +133,11 @@ public class RecipeDetailFragment extends Fragment implements LoaderManager.Load
         // This makes sure that the host activity has implemented the callback interface
         // If not, it throws an exception
         try {
-            mHandler = (RecipeDetailFragmentStepAdapter.OnRecipeStepClickHandler) context;
+            mOnClickHandler         = (RecipeDetailFragmentStepAdapter.OnRecipeStepClickHandler) context;
+            mRecipeDetailHandler    = (RecipeDetailHandler) context;
         } catch (ClassCastException e) {
             throw new ClassCastException(context.toString()
-                    + " must implement OnImageClickListener");
+                    + " must implement RecipeDetailFragmentStepAdapter.OnRecipeStepClickHandler AND RecipeDetailHandler");
         }
     }
 
@@ -252,8 +277,8 @@ public class RecipeDetailFragment extends Fragment implements LoaderManager.Load
 
     @Override
     public void onRecipeStepClick(int recipeStep) {
-        if(mHandler!=null)
-            mHandler.onRecipeStepClick(recipeStep);
+        mSelectedRecipeStepId = recipeStep;
+        if(mOnClickHandler !=null) mOnClickHandler.onRecipeStepClick(mSelectedRecipeStepId);
     }
 
     public class RecipeDetailFragmentLoaderResponse{
@@ -273,5 +298,6 @@ public class RecipeDetailFragment extends Fragment implements LoaderManager.Load
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putInt(RECIPE_ID,mRecipeId);
+        outState.putInt(SELECTED_RECIPE_DETAIL_STEP_ID,mSelectedRecipeStepId);
     }
 }
