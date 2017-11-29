@@ -52,7 +52,9 @@ public class RecipeDetailStepFragment extends Fragment implements LoaderManager.
 
     private SimpleExoPlayer mExoPlayer;
     private long mCurrentExoPlayerPosition;
-    public static final String CURRENT_PLAYER_POSITION = "CURRENT_PLAYER_POSITION";
+    private boolean mIsPlayingWhenReady;
+    public static final String CURRENT_PLAYER_POSITION  = "CURRENT_PLAYER_POSITION";
+    public static final String CURRENT_PLAYER_STATE     = "CURRENT_PLAYER_STATE";
 
     private TaskResponse mTaskResponse;
 
@@ -113,10 +115,12 @@ public class RecipeDetailStepFragment extends Fragment implements LoaderManager.
             if (bundle.containsKey(RECIPE_STEP_ID)) mRecipeStepId = bundle.getInt(RECIPE_STEP_ID);
         }
 
-        // Get any saved ExoPlayer position. If there is any one.
-        mCurrentExoPlayerPosition = C.TIME_UNSET;
+        // Get any saved ExoPlayer position and state. If there is any one.
+        mCurrentExoPlayerPosition   = C.TIME_UNSET;
+        mIsPlayingWhenReady         = true;
         if (savedInstanceState != null) {
             if(savedInstanceState.containsKey(CURRENT_PLAYER_POSITION)) mCurrentExoPlayerPosition = savedInstanceState.getLong(CURRENT_PLAYER_POSITION, C.TIME_UNSET);
+            if(savedInstanceState.containsKey(CURRENT_PLAYER_STATE)) mIsPlayingWhenReady = savedInstanceState.getBoolean(CURRENT_PLAYER_STATE);
         }
 
         // Get some device current configuration values.
@@ -330,7 +334,7 @@ public class RecipeDetailStepFragment extends Fragment implements LoaderManager.
             // Recovering last position of the video player. Source: https://stackoverflow.com/questions/45481775/exoplayer-restore-state-when-resumed/45482017#45482017
             if (mCurrentExoPlayerPosition!=C.TIME_UNSET) mExoPlayer.seekTo(mCurrentExoPlayerPosition);
             mExoPlayer.prepare(mediaSource);
-            mExoPlayer.setPlayWhenReady(true);
+            mExoPlayer.setPlayWhenReady(mIsPlayingWhenReady);
         }
     }
 
@@ -342,7 +346,8 @@ public class RecipeDetailStepFragment extends Fragment implements LoaderManager.
 
     private void releasePlayer() {
         if (mExoPlayer != null) {
-            mCurrentExoPlayerPosition = mExoPlayer.getCurrentPosition(); // Saving the Current position
+            mCurrentExoPlayerPosition   = mExoPlayer.getCurrentPosition(); // Saving the Current position
+            mIsPlayingWhenReady         = mExoPlayer.getPlayWhenReady();    // Saving the Player State
             mExoPlayer.stop();
             mExoPlayer.release();
             mExoPlayer = null;
@@ -353,7 +358,7 @@ public class RecipeDetailStepFragment extends Fragment implements LoaderManager.
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         if(mCurrentExoPlayerPosition!=C.TIME_UNSET) outState.putLong(CURRENT_PLAYER_POSITION,mCurrentExoPlayerPosition);
-
+        outState.putBoolean(CURRENT_PLAYER_STATE, mIsPlayingWhenReady);
     }
 
     class TaskResponse{
